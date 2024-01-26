@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<?import java.net.URL?>
+<VBox id="homePage" alignment="CENTER" spacing="5.0" xmlns="http://javafx.com/javafx/17.0.2-ea"
+      xmlns:fx="http://javafx.com/fxml/1">
+    <stylesheets>
+        <URL value="@styles.css"/>
+    </stylesheets>
+
+    <children>
+        <Label fx:id="mainMenuLabel" text="Fluidity" styleClass="title"/>
+
+        <Button text="Start Simulation" styleClass="menu-button"/>
+        <Button text="View Recordings" styleClass="menu-button"/>
+        <Button text="Settings" styleClass="menu-button"/>
+        <Button text="About" styleClass="menu-button"/>
+        <Button text="Exit" styleClass="menu-button"/>
+
+    </children>
+</VBox>

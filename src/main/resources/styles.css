@@ -1,0 +1,46 @@
+.menu-button {
+    -fx-background-color: #262626;
+    -fx-text-fill: white;
+    -fx-border-color: white;
+    -fx-border-width: 1px;
+
+    -fx-min-height: 50px;
+    -fx-pref-height: 50px;
+    -fx-max-height: 50px;
+
+    -fx-min-width: 200px;
+    -fx-pref-width: 200px;
+    -fx-max-width: 200px;
+
+    -fx-font-size: 20px;
+}
+
+.title {
+    -fx-font-family: "Courier New";
+    -fx-font-size: 80;
+    -fx-text-fill: black;
+    -fx-padding: 70px;
+}
+
+#homePage {
+    -fx-background-color: #404040;
+    -fx-border-color: white;
+    -fx-border-width: 1px;
+}
+
+.menu-button:hover {
+    -fx-cursor: hand;
+    -fx-background-color: #d9d9d9;
+    -fx-text-fill: black;
+    -fx-border-color: black;
+    -fx-padding: 6px 9px;
+}
+
+
+.menu-button:pressed {
+    -fx-cursor: default;
+    -fx-background-color: #9b9b9b;
+    -fx-text-fill: black;
+    -fx-border-color: black;
+    -fx-padding: 6px 9px;
+}
