@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.text.Font?>
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<AnchorPane styleClass="main-theme" maxHeight="-Infinity" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="720.0"
+            prefWidth="1280.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.fluidity.structure.controllers.RecordingsController">
+    <stylesheets>
+        <URL value="@styles.css"/>
+    </stylesheets>
+    <children>
+        <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+                    prefHeight="720.0" prefWidth="1280.0">
+            <top>
+                <Label styleClass="heading-label" text="Recordings" BorderPane.alignment="CENTER">
+                    <font>
+                        <Font size="54.0"/>
+                    </font>
+                    <BorderPane.margin>
+                        <Insets top="25.0"/>
+                    </BorderPane.margin>
+                </Label>
+            </top>
+            <bottom>
+                <Button onAction="#onReturnToHomeButtonClick" styleClass="return-button, menu-button"
+                        mnemonicParsing="false" prefHeight="40.0" prefWidth="140.0" text="Return To Home"
+                        BorderPane.alignment="BOTTOM_RIGHT">
+                    <BorderPane.margin>
+                        <Insets bottom="40.0" right="40.0"/>
+                    </BorderPane.margin>
+                </Button>
+            </bottom>
+            <center>
+                <VBox styleClass="container" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+                      minWidth="-Infinity" prefHeight="510.0" prefWidth="951.0" BorderPane.alignment="CENTER"/>
+            </center>
+        </BorderPane>
+    </children>
+</AnchorPane>
