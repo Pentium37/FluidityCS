@@ -1,20 +1,10 @@
-.menu-button {
-    -fx-background-color: #262626;
-    -fx-text-fill: white;
+.main-theme {
+    -fx-background-color: #404040;
     -fx-border-color: white;
     -fx-border-width: 1px;
-
-    -fx-min-height: 50px;
-    -fx-pref-height: 50px;
-    -fx-max-height: 50px;
-
-    -fx-min-width: 200px;
-    -fx-pref-width: 200px;
-    -fx-max-width: 200px;
-
-    -fx-font-size: 20px;
 }
 
+/*Main Menu CSS*/
 .title {
     -fx-font-family: "Courier New";
     -fx-font-size: 80;
@@ -22,8 +12,9 @@
     -fx-padding: 70px;
 }
 
-#homePage {
-    -fx-background-color: #404040;
+.menu-button {
+    -fx-background-color: #262626;
+    -fx-text-fill: white;
     -fx-border-color: white;
     -fx-border-width: 1px;
 }
@@ -36,11 +27,143 @@
     -fx-padding: 6px 9px;
 }
 
-
 .menu-button:pressed {
     -fx-cursor: default;
     -fx-background-color: #9b9b9b;
     -fx-text-fill: black;
     -fx-border-color: black;
     -fx-padding: 6px 9px;
+}
+
+/*Settings Menu CSS*/
+.settings-button {
+    -fx-background-color: #262626;
+    -fx-text-fill: white;
+    -fx-border-color: black;
+    -fx-border-width: 1px;
+}
+
+.settings-button:hover {
+    -fx-cursor: hand;
+}
+
+.settings-button:pressed {
+    -fx-cursor: default;
+    -fx-background-color: #313131;
+    -fx-text-fill: white;
+    -fx-border-color: black;
+    -fx-padding: 6px 9px;
+}
+
+.settings-label {
+    -fx-background-color: #262626;
+    -fx-text-fill: white;
+    -fx-border-color: black;
+    -fx-border-width: 1px;
+}
+
+
+.tab-pane:focused .tab-header-area .headers-region .tab:selected .focus-indicator {
+    -fx-border-width: 0;
+    -fx-border-insets: 0 0 0 0;
+    -fx-border-radius: 0;
+}
+
+.tab-pane:top *.tab-header-area {
+    -fx-padding: 0 0 0 30;
+}
+
+.tab-header-background {
+    -fx-background-color: #404040;
+    -fx-border-width: 0 0 1px 0;
+    -fx-border-color: black;
+}
+
+.tab-pane {
+    -fx-border-width: 1px;
+    -fx-border-color: black;
+}
+
+.tab-pane .tab:selected {
+    -fx-border-width: 1px;
+    -fx-border-color: white;
+    -fx-background-insets: 0 0 0 0;
+    -fx-background-radius: 0 0 0 0;
+}
+
+.tab {
+    -fx-background-color: transparent;
+    -fx-border-width: 1px;
+    -fx-border-color: black;
+    -fx-alignment: CENTER;
+    -fx-font-weight: bold;
+    -fx-padding: 0 10 0 10;
+}
+
+.tab-label {
+    -fx-alignment: CENTER;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 0 10 0 10;
+}
+
+.tab:hover {
+    -fx-cursor: hand;
+}
+
+/*About*/
+
+.container {
+    -fx-border-width: 1px;
+    -fx-border-color: black;
+    -fx-alignment: CENTER;
+    -fx-padding: 0 10 0 10;
+}
+
+.canvas {
+    -fx-border-color: black;
+
+}
+
+/*2 types of button sizes*/
+
+.return-button {
+    -fx-min-height: 50px;
+    -fx-pref-height: 50px;
+    -fx-max-height: 50px;
+
+    -fx-min-width: 110px;
+    -fx-pref-width: 110px;
+    -fx-max-width: 110px;
+
+    -fx-font-size: 14px;
+}
+
+.small-button {
+    -fx-min-height: 50px;
+    -fx-pref-height: 50px;
+    -fx-max-height: 50px;
+
+    -fx-min-width: 200px;
+    -fx-pref-width: 200px;
+    -fx-max-width: 200px;
+
+    -fx-font-size: 20px;
+}
+
+.big-button {
+    -fx-min-height: 50px;
+    -fx-pref-height: 50px;
+    -fx-max-height: 50px;
+
+    -fx-min-width: 300px;
+    -fx-pref-width: 300px;
+    -fx-max-width: 300px;
+
+    -fx-font-size: 20px;
+}
+
+.heading-label {
+    -fx-font-family: "Courier New";
+    -fx-text-fill: black;
 }
