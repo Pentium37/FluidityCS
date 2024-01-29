@@ -9,7 +9,7 @@
 <?import javafx.scene.control.Button?>
 <AnchorPane styleClass="main-theme" maxHeight="-Infinity" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="720.0"
             prefWidth="1280.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.fluidity.structure.controllers.RecordingsController">
+            fx:controller="com.fluidity.structure.ui.controllers.RecordingsController">
     <stylesheets>
         <URL value="@styles.css"/>
     </stylesheets>

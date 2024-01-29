@@ -1,6 +1,6 @@
-package com.fluidity.structure.controllers;
+package com.fluidity.structure.ui.controllers;
 
-import com.fluidity.structure.ProgramState;
+import com.fluidity.structure.ui.ProgramState;
 import javafx.fxml.FXML;
 
 public class AboutController extends Controller{

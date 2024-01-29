@@ -1,9 +1,9 @@
-package com.fluidity.structure.controllers;
+package com.fluidity.structure.ui.controllers;
 
-import com.fluidity.structure.ProgramState;
+import com.fluidity.structure.ui.ProgramState;
 import javafx.fxml.FXML;
 
-public class HomePageController extends Controller{
+public class MainMenuController extends Controller {
 
 	@FXML
 	public void onStartSimulationButtonClick() {
@@ -19,6 +19,7 @@ public class HomePageController extends Controller{
 	public void onSettingsButtonClick() {
 		manager.loadScene(ProgramState.SETTINGS);
 	}
+
 	@FXML
 	public void onAboutButtonClick() {
 		manager.loadScene(ProgramState.ABOUT);
@@ -26,10 +27,8 @@ public class HomePageController extends Controller{
 
 	@FXML
 	public void onExitButtonClick() {
-
+		manager.loadScene(ProgramState.EXIT);
 	}
-
-
 
 	@Override
 	void initialise() {

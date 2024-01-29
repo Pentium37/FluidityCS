@@ -1,6 +1,6 @@
-package com.fluidity.structure;
+package com.fluidity.structure.ui;
 
-import com.fluidity.structure.controllers.Controller;
+import com.fluidity.structure.ui.controllers.Controller;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -52,6 +52,10 @@ public class Manager {
 	private void setManager(ProgramState programState) {
 		controllers.get(programState)
 				.setManager(this);
+	}
+
+	public void close() {
+		window.close();
 	}
 }
 

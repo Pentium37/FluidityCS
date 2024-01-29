@@ -1,4 +1,4 @@
-package com.fluidity.structure;
+package com.fluidity.structure.ui;
 
 // Would be preferable to name it Scene/View, but it would override JFX classes
 public enum ProgramState {
@@ -6,7 +6,7 @@ public enum ProgramState {
 	MAIN_MENU("/MainMenu.fxml"),
 	SETTINGS("/Settings.fxml"),
 	ABOUT("/About.fxml"),
-	//	EXIT("/Exit.fxml"),
+	EXIT("/Exit.fxml"),
 	SIMULATION("/Simulation.fxml"),
 	RECORDINGS("/Recordings.fxml");
 
