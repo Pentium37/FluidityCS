@@ -14,9 +14,4 @@ public class ExitController extends Controller {
 	public void onReturnToHomeButtonClick() {
 		manager.loadScene(ProgramState.MAIN_MENU);
 	}
-
-	@Override
-	void initialise() {
-
-	}
 }

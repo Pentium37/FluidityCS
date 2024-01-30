@@ -18,12 +18,14 @@ public class Manager {
 	/*Enum maps containing the scenes and controllers corresponding to each program state .
 	The controller is of the type of the abstract class Controller as every other controller in my program extends off this
 	and can therefore be classified as part of the class. */
-	private final Map<ProgramState, Scene> scenes = new EnumMap<>(ProgramState.class);
-	private final Map<ProgramState, Controller> controllers = new EnumMap<>(ProgramState.class);
+	private final Map<ProgramState, Scene> scenes;
+	private final Map<ProgramState, Controller> controllers;
 
 	// The manager is the main class which contains the stage
 	// It controls the switching between scenes
 	public Manager(final Stage window) {
+		scenes = new EnumMap<>(ProgramState.class);
+		controllers = new EnumMap<>(ProgramState.class);
 		this.window = window;
 		window.setTitle("Fluidity - The Eulerian Fluid Simulator");
 		for (ProgramState programState : ProgramState.values()) {

@@ -29,9 +29,4 @@ public class MainMenuController extends Controller {
 	public void onExitButtonClick() {
 		manager.loadScene(ProgramState.EXIT);
 	}
-
-	@Override
-	void initialise() {
-
-	}
 }

@@ -6,9 +6,6 @@ import java.io.PrintWriter;
 import java.nio.file.Paths;
 import java.util.Scanner;
 
-/**
- * @author Yalesan Thayalan {@literal <yalesan2006@outlook.com>}
- */
 public class File {
 	private String path;
 
@@ -16,8 +13,13 @@ public class File {
 		this.path = path;
 	}
 
-	public static void createFile(String path) {
-
+	public static void createFile(String name) {
+		try {
+			java.io.File fileToCreate = new java.io.File(name);
+			fileToCreate.createNewFile();
+		} catch (IOException e) {
+			System.out.println("Error: File Could Not be Created: " + e.getMessage());
+		}
 	}
 
 	public String readFile() {
@@ -33,7 +35,7 @@ public class File {
 	}
 
 	public String writeLine(String line) {
-		try (PrintWriter printWriter = new PrintWriter(path);) {
+		try (PrintWriter printWriter = new PrintWriter(path)) {
 			printWriter.write(line);
 		} catch (FileNotFoundException e) {
 			throw new RuntimeException(e);

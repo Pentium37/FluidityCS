@@ -8,6 +8,4 @@ public abstract class Controller {
 	public void setManager(Manager manager) {
 		this.manager = manager;
 	}
-
-	abstract void initialise();
 }
