@@ -1,7 +1,7 @@
-package com.fluidity.structure;
+package com.fluidity.program;
 
-import com.fluidity.structure.ui.Manager;
-import com.fluidity.structure.ui.ProgramState;
+import com.fluidity.program.ui.Manager;
+import com.fluidity.program.ui.ProgramState;
 import javafx.application.Application;
 import javafx.stage.Stage;
 

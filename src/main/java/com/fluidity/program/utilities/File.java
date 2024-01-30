@@ -1,4 +1,4 @@
-package com.fluidity.structure.utilities;
+package com.fluidity.program.utilities;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;

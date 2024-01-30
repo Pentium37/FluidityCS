@@ -1,6 +1,6 @@
-package com.fluidity.structure.ui;
+package com.fluidity.program.ui;
 
-import com.fluidity.structure.ui.controllers.Controller;
+import com.fluidity.program.ui.controllers.Controller;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -11,7 +11,13 @@ import java.util.Map;
 
 public class Manager {
 	// The stage which the entirety of the program will be on
+	// My window is private because I don't want any class other than this manager class to modify it
+	// The only way I can then make changes to the window is through the public methods provided through this class
 	private final Stage window;
+
+	/*Enum maps containing the scenes and controllers corresponding to each program state .
+	The controller is of the type of the abstract class Controller as every other controller in my program extends off this
+	and can therefore be classified as part of the class. */
 	private final Map<ProgramState, Scene> scenes = new EnumMap<>(ProgramState.class);
 	private final Map<ProgramState, Controller> controllers = new EnumMap<>(ProgramState.class);
 
@@ -27,6 +33,8 @@ public class Manager {
 	}
 
 	public void loadScene(ProgramState programState) {
+		// Loads the Scene stored in the programState Enum
+		// Makes sure the window is not resizable
 		window.setResizable(false);
 		window.setScene(scenes.get(programState));
 		window.show();
@@ -36,12 +44,12 @@ public class Manager {
 	 whenever the function is called after this, loading does not need to happen as the scene is loaded*/
 	private void initialiseUI(ProgramState programState) {
 		try {
-
 			// Object which loads the FXML file in the path
 			// If there is no path, an exception is thrown and the catch block is run -> The program terminates
 			FXMLLoader loader = new FXMLLoader(getClass().getResource(programState.getPath()));
 
 			// Creates a scene and controller corresponding to the FXML loader found
+			// Places the objects into the map so that they can be retrieved if needed
 			scenes.put(programState, new Scene(loader.load(), 1280, 720));
 			controllers.put(programState, loader.getController());
 		} catch (IOException e) {
@@ -49,15 +57,15 @@ public class Manager {
 		}
 	}
 
+	// Handler method which initialises the manager for the controllers of each of the program state
 	private void setManager(ProgramState programState) {
+		// Passing in the current instance of the manager as the instance for the controllers to provide data to
 		controllers.get(programState)
 				.setManager(this);
 	}
 
+	// Closes the stage in the case that the program needs to be safely exited from
 	public void close() {
 		window.close();
 	}
 }
-
-// Checks if the scene hasn't been fetched yet
-// if it hasn't been fetched, it attempts to fetch it from the corresponding fxml path

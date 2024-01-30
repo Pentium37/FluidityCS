@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 
 <VBox alignment="CENTER" spacing="5.0" styleClass="main-theme" xmlns="http://javafx.com/javafx/17.0.2-ea"
-      xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.fluidity.structure.ui.controllers.MainMenuController">
+      xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.fluidity.program.ui.controllers.MainMenuController">
     <stylesheets>
         <URL value="@styles.css"/>
     </stylesheets>

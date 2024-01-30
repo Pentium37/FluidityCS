@@ -1,6 +1,6 @@
-package com.fluidity.structure.ui.controllers;
+package com.fluidity.program.ui.controllers;
 
-import com.fluidity.structure.ui.Manager;
+import com.fluidity.program.ui.Manager;
 
 public abstract class Controller {
 	protected Manager manager;

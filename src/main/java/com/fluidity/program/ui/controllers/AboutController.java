@@ -1,15 +1,13 @@
-package com.fluidity.structure.ui.controllers;
+package com.fluidity.program.ui.controllers;
 
-import com.fluidity.structure.ui.ProgramState;
+import com.fluidity.program.ui.ProgramState;
 import javafx.fxml.FXML;
 
-public class SimulationController extends Controller{
-
+public class AboutController extends Controller{
 	@FXML
 	public void onReturnToHomeButtonClick() {
 		manager.loadScene(ProgramState.MAIN_MENU);
 	}
-
 	@Override
 	void initialise() {
 
