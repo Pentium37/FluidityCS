@@ -1,6 +1,7 @@
 module com.example.fluidity {
 	requires javafx.controls;
 	requires javafx.fxml;
+	requires log4j.api;
 
 	exports com.fluidity.program;
 	opens com.fluidity.program to javafx.fxml;

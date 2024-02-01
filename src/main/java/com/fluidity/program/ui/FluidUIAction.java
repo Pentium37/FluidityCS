@@ -13,4 +13,18 @@ public enum FluidUIAction {
 	FluidUIAction(String path) {
 		this.path = path;
 	}
+
+	public String getPath() {
+		return path;
+	}
+
+	public static FluidUIAction getByPath(String path) {
+		for (FluidUIAction action : FluidUIAction.values()) {
+			if (action.path.equals(path)) {
+				return action;
+			}
+		}
+		System.out.println(path);
+		throw new IllegalArgumentException();
+	}
 }
