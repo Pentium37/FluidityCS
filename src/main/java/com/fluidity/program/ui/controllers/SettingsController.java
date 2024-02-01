@@ -34,12 +34,24 @@ public class SettingsController extends Controller implements Initializable {
 	private static final String configPath = "configurations.txt";
 	@FXML
 	private Button fluidSavingSetter;
+	@FXML
+	private Button fluidSizeSetter;
+	@FXML
+	private Button cellSizeSetter;
+	@FXML
+	private Button fpsSetter;
 	private boolean savingEnabled;
+	private String fluidSize;
+	private String cellSize;
+	private int FPS;
 
 	@Override
 	public void initialize(final URL url, final ResourceBundle resourceBundle) {
 		// change later
 		savingEnabled = false;
+		fluidSize = "NxN";
+		cellSize = "NxN";
+		FPS = 60;
 
 		keyBindMap = new EnumMap<>(FluidUIAction.class);
 
@@ -51,7 +63,7 @@ public class SettingsController extends Controller implements Initializable {
 		buttonMap.put(FluidUIAction.PRIMARY_STEP_BACKWARD, primaryStepBackwardKeyBindSetter);
 		buttonMap.put(FluidUIAction.SECONDARY_STEP_BACKWARD, secondaryStepBackwardKeyBindSetter);
 
-		loadKeyBindsFromConfigFile();
+		loadConfigurations();
 		setKeyBindFlag = false;
 		recentlyPressedAction = null;
 	}
@@ -62,7 +74,7 @@ public class SettingsController extends Controller implements Initializable {
 			changeButtonColor(recentlyPressedAction, primaryButtonColor);
 		}
 
-		saveKeyBindsToConfigFile();
+		saveConfigurations();
 		manager.loadScene(ProgramState.MAIN_MENU);
 	}
 
@@ -134,7 +146,54 @@ public class SettingsController extends Controller implements Initializable {
 		}
 	}
 
-	private void saveKeyBindsToConfigFile() {
+	private void saveConfigurations() {
+		StringBuilder output = new StringBuilder();
+
+		output.append(getFormattedKeyBindConfigurations());
+		output.append(getFormattedGraphicsConfigurations());
+
+		FileHandler.clearFile(configPath);
+		FileHandler.writeLine(configPath, output.toString());
+	}
+
+	private void loadConfigurations() {
+		List<String> configurations = FileHandler.readFile(configPath);
+		for (String line : configurations) {
+
+			String[] configuration = line.split(":", 2);
+			if (configuration[1].equals("null")) {
+				continue;
+			}
+
+			try {
+				FluidUIAction action = FluidUIAction.getByPath(configuration[0]);
+				keyBindMap.put(action, KeyCode.getKeyCode(configuration[1]));
+				buttonMap.get(action)
+						.setText(configuration[1].toUpperCase());
+			} catch (IllegalArgumentException e) {
+				switch (configuration[0]) {
+					case "saving" -> {
+						savingEnabled = configuration[1].equals("true");
+						fluidSavingSetter.setText("Fluid Saving: " + ((savingEnabled) ? "Enabled" : "Disabled"));
+					}
+					case "FPS" -> {
+						FPS = Integer.parseInt(configuration[1]);
+						fpsSetter.setText("FPS: " + FPS);
+					}
+					case "fluid-size" -> {
+						fluidSize = configuration[1];
+						fluidSizeSetter.setText("Fluid Size: " + fluidSize);
+					}
+					case "cell-size" -> {
+						cellSize = configuration[1];
+						cellSizeSetter.setText("Cell Size: " + cellSize);
+					}
+				}
+			}
+		}
+	}
+
+	private String getFormattedKeyBindConfigurations() {
 		StringBuilder output = new StringBuilder();
 		for (FluidUIAction action : FluidUIAction.values()) {
 			if (keyBindMap.get(action) != null) {
@@ -145,27 +204,17 @@ public class SettingsController extends Controller implements Initializable {
 						.append("\n");
 			}
 		}
-		FileHandler.clearFile(configPath);
-		FileHandler.writeLine(configPath, output.toString());
+		return output.toString();
 	}
 
-	private void loadKeyBindsFromConfigFile() {
-		List<String> configurations = FileHandler.readFile(configPath);
-		for (String line : configurations) {
-
-			String[] configuration = line.split(":", 2);
-			if (configuration[1].equals("null")) {
-				continue;
-			}
-			FluidUIAction action = FluidUIAction.getByPath(configuration[0]);
-			buttonMap.get(action)
-					.setText(configuration[1]);
-		}
+	private String getFormattedGraphicsConfigurations() {
+		return "saving:" + savingEnabled + "\n" + "FPS:" + FPS + "\n" + "fluid-size:" + fluidSize + "\n" + "cell-size:"
+				+ cellSize + "\n";
 	}
 
 	@FXML
 	public void fluidSavingSetterAction() {
 		savingEnabled = !savingEnabled;
-		fluidSavingSetter.setText((savingEnabled) ? "Fluid Cache: Enabled" : "Fluid Cache: Disabled");
+		fluidSavingSetter.setText((savingEnabled) ? "Fluid Saving: Enabled" : "Fluid Saving: Disabled");
 	}
 }

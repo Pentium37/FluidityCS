@@ -38,10 +38,10 @@
                                     <children>
                                         <VBox alignment="CENTER" prefHeight="510.0" prefWidth="951.0" spacing="50.0">
                                             <children>
-                                                <Button alignment="CENTER" contentDisplay="CENTER" focusTraversable="false" prefHeight="40.0" prefWidth="300.0" styleClass="settings-button" text="Cell Size: N x N" />
-                                                <Button alignment="CENTER" contentDisplay="CENTER" focusTraversable="false" prefHeight="40.0" prefWidth="300.0" styleClass="settings-button" text="Fluid Size: N x N" />
+                                                <Button fx:id="cellSizeSetter" alignment="CENTER" contentDisplay="CENTER" focusTraversable="false" prefHeight="40.0" prefWidth="300.0" styleClass="settings-button" text="Cell Size: N x N" />
+                                                <Button fx:id="fluidSizeSetter" alignment="CENTER" contentDisplay="CENTER" focusTraversable="false" prefHeight="40.0" prefWidth="300.0" styleClass="settings-button" text="Fluid Size: N x N" />
                                                 <Button fx:id="fluidSavingSetter" alignment="CENTER" contentDisplay="CENTER" focusTraversable="false" onAction="#fluidSavingSetterAction" prefHeight="40.0" prefWidth="300.0" styleClass="settings-button" text="Fluid Cache: Disabled" />
-                                                <Button alignment="CENTER" contentDisplay="CENTER" focusTraversable="false" prefHeight="40.0" prefWidth="300.0" styleClass="settings-button" text="FPS: N" />
+                                                <Button fx:id="fpsSetter" alignment="CENTER" contentDisplay="CENTER" focusTraversable="false" prefHeight="40.0" prefWidth="300.0" styleClass="settings-button" text="FPS: N" />
                                             </children>
                                         </VBox>
                                     </children>

@@ -9,4 +9,9 @@ public class SimulationController extends Controller{
 	public void onReturnToHomeButtonClick() {
 		manager.loadScene(ProgramState.MAIN_MENU);
 	}
+
+	@FXML
+	private void onGoToSettingsClick() {
+		manager.loadScene(ProgramState.SETTINGS);
+	}
 }

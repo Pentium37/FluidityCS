@@ -22,7 +22,7 @@
                   <Insets />
                </opaqueInsets>
                <VBox.margin>
-                  <Insets bottom="150.0" top="30.0" />
+                  <Insets bottom="150.0" top="120.0" />
                </VBox.margin>
             </Label>
             <GridPane alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="1000.0">
@@ -39,8 +39,8 @@
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
-                  <Button onAction="#onExitSimulationButtonClick" alignment="CENTER" contentDisplay="CENTER" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="50.0" prefWidth="200.0" styleClass="menu-button" text="Yes" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                  <Button onAction="#onReturnToHomeButtonClick" alignment="CENTER" contentDisplay="CENTER" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="50.0" prefWidth="200.0" styleClass="menu-button" text="No" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+                  <Button alignment="CENTER" contentDisplay="CENTER" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onExitSimulationButtonClick" prefHeight="50.0" prefWidth="200.0" styleClass="menu-button" text="Yes" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                  <Button alignment="CENTER" contentDisplay="CENTER" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onReturnToHomeButtonClick" prefHeight="50.0" prefWidth="200.0" styleClass="menu-button" text="No" GridPane.columnIndex="3" GridPane.rowIndex="2" />
                </children>
             </GridPane>
          </children>

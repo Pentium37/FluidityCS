@@ -24,7 +24,6 @@ public enum FluidUIAction {
 				return action;
 			}
 		}
-		System.out.println(path);
 		throw new IllegalArgumentException();
 	}
 }

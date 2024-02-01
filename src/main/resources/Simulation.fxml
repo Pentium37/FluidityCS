@@ -6,45 +6,64 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0"
-            prefWidth="1280.0" styleClass="main-theme" xmlns="http://javafx.com/javafx/17.0.2-ea"
-            xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.fluidity.program.ui.controllers.SimulationController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" styleClass="main-theme" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.fluidity.program.ui.controllers.SimulationController">
     <stylesheets>
-        <URL value="@styles.css"/>
+        <URL value="@styles.css" />
     </stylesheets>
 
     <children>
-        <HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0"
-              prefWidth="1280.0" styleClass="container">
+        <HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" styleClass="container">
             <children>
-                <Canvas styleClass="simulation-container" height="700.0" width="1000.0">
+                <Canvas height="700.0" styleClass="simulation-container" width="1000.0">
                     <HBox.margin>
-                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                     </HBox.margin>
                 </Canvas>
-                <VBox styleClass="simulation-container" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity"
-                      minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="250.0">
+                <VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="250.0" styleClass="simulation-container">
                     <HBox.margin>
-                        <Insets bottom="10.0" right="10.0" top="10.0"/>
+                        <Insets bottom="10.0" right="10.0" top="10.0" />
                     </HBox.margin>
                     <children>
-                        <VBox styleClass="simulation-container, parameter-container" alignment="CENTER"
-                              maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-                              prefHeight="450.0" prefWidth="240.0">
+                        <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="382.0" prefWidth="240.0" styleClass="simulation-container, parameter-container">
                             <VBox.margin>
-                                <Insets bottom="10.0"/>
+                                <Insets bottom="10.0" />
                             </VBox.margin>
+                            <children>
+                                <Label styleClass="small-text" text="Viscosity">
+                                    <VBox.margin>
+                                        <Insets top="10.0" />
+                                    </VBox.margin>
+                                </Label>
+                                <Slider blockIncrement="0.25" max="5.0" prefHeight="0.0" prefWidth="85.0" showTickLabels="true" showTickMarks="true" styleClass="small-text" />
+                                <Label layoutX="107.0" layoutY="21.0" styleClass="small-text" text="Flow Speed" />
+                                <Slider blockIncrement="0.25" layoutX="11.0" layoutY="38.0" max="5.0" prefHeight="0.0" prefWidth="85.0" showTickLabels="true" showTickMarks="true" styleClass="small-text" />
+                                <HBox alignment="TOP_CENTER" prefHeight="28.0" prefWidth="238.0" spacing="10.0" styleClass="small-text">
+                                    <children>
+                                        <ChoiceBox prefWidth="110.0" />
+                                        <ChoiceBox prefWidth="110.0" />
+                                    </children>
+                                </HBox>
+                                <HBox alignment="TOP_CENTER" layoutX="11.0" layoutY="130.0" prefHeight="28.0" prefWidth="238.0" spacing="10.0">
+                                    <children>
+                                        <CheckBox mnemonicParsing="false" prefWidth="110.0" styleClass="small-text" text="Flowlines" />
+                                        <CheckBox mnemonicParsing="false" prefWidth="110.0" styleClass="small-text" text="Sensors" />
+                                    </children>
+                                    <padding>
+                                        <Insets top="5.0" />
+                                    </padding>
+                                </HBox>
+                            </children>
                         </VBox>
-                        <Pane styleClass="simulation-container, parameter-container" maxHeight="-Infinity"
-                              maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0"
-                              prefWidth="240.0">
+                        <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="234.0" prefWidth="240.0" styleClass="simulation-container, parameter-container">
                             <VBox.margin>
-                                <Insets bottom="10.0"/>
+                                <Insets bottom="10.0" />
                             </VBox.margin>
                         </Pane>
-                        <Button maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-                                mnemonicParsing="false" onAction="#onReturnToHomeButtonClick" prefHeight="20.0"
-                                prefWidth="240.0" styleClass="menu-button" text="Return To Home"/>
+                        <Button maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onGoToSettingsClick" prefHeight="20.0" prefWidth="240.0" styleClass="menu-button" text="Settings">
+                     <VBox.margin>
+                        <Insets bottom="5.0" />
+                     </VBox.margin></Button>
+                        <Button maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onReturnToHomeButtonClick" prefHeight="20.0" prefWidth="240.0" styleClass="menu-button" text="Return To Home" />
                     </children>
                 </VBox>
             </children>
