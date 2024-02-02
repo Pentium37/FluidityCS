@@ -37,7 +37,7 @@ public class SettingsController extends Controller implements Initializable {
 	@FXML
 	private Button fluidSavingSetter;
 	@FXML
-	private Button fluidSizeSetter;
+	private Button iterationsSetter;
 	@FXML
 	private Button cellSizeSetter;
 	@FXML
@@ -46,7 +46,7 @@ public class SettingsController extends Controller implements Initializable {
 	private TabPane settingsPane;
 	GraphicsHandler graphicsHandler;
 	private boolean savingEnabled;
-	private int[] fluidSize;
+	private int iterations;
 	private int[] cellSize;
 	private int FPS;
 
@@ -190,10 +190,9 @@ public class SettingsController extends Controller implements Initializable {
 						FPS = Integer.parseInt(configuration[1]);
 						fpsSetter.setText("FPS: " + FPS);
 					}
-					case "fluid-size" -> {
-						String[] split = configuration[1].split(",");
-						fluidSize = new int[] { Integer.parseInt(split[0]), Integer.parseInt(split[1]) };
-						fluidSizeSetter.setText("Fluid Size: (" + fluidSize[0] + "," + fluidSize[1] + ")");
+					case "iterations" -> {
+						iterations = Integer.parseInt(configuration[1]);
+						iterationsSetter.setText("Iterations: " + iterations);
 					}
 					case "cell-size" -> {
 						String[] split = configuration[1].split(",");
@@ -203,7 +202,7 @@ public class SettingsController extends Controller implements Initializable {
 				}
 			}
 		}
-		graphicsHandler = new GraphicsHandler(FPS, cellSize, fluidSize);
+		graphicsHandler = new GraphicsHandler(FPS, cellSize, iterations);
 	}
 
 	private String getFormattedKeyBindConfigurations() {
@@ -221,8 +220,8 @@ public class SettingsController extends Controller implements Initializable {
 	}
 
 	private String getFormattedGraphicsConfigurations() {
-		return "saving:" + savingEnabled + "\n" + "FPS:" + FPS + "\n" + "fluid-size:" +fluidSize[0] + "," + fluidSize[1]+ "\n" + "cell-size:"
-				+ cellSize[0] + "," + cellSize[1] + "\n";
+		return "saving:" + savingEnabled + "\n" + "FPS:" + FPS + "\n" + "iterations:" + iterations + "\n"
+				+ "cell-size:" + cellSize[0] + "," + cellSize[1] + "\n";
 	}
 
 	@FXML
@@ -239,10 +238,10 @@ public class SettingsController extends Controller implements Initializable {
 	}
 
 	@FXML
-	public void fluidSizeSetterAction() {
-		graphicsHandler.shiftFluidSize();
-		fluidSize = graphicsHandler.getCurrentFluidSize();
-		fluidSizeSetter.setText("Fluid Size: (" + fluidSize[0] + "," + fluidSize[1] + ")");
+	public void iterationsSetterAction() {
+		graphicsHandler.shiftIterations();
+		iterations = graphicsHandler.getCurrentIterations();
+		iterationsSetter.setText("Iterations: " + iterations);
 	}
 
 	@FXML

@@ -6,9 +6,9 @@ import com.fluidity.program.utilities.LinkedListNode;
 public class GraphicsHandler {
 	private LinkedListNode<Integer> currentFPS;
 	private LinkedListNode<int[]> currentCellSize;
-	private LinkedListNode<int[]> currentFluidSize;
+	private LinkedListNode<Integer> currentIterations;
 
-	public GraphicsHandler(int currentFPS, int[] currentCellSize, int[] currentFluidSize) {
+	public GraphicsHandler(int currentFPS, int[] currentCellSize, int currentIterations) {
 		Integer[] fpsValues = { 15, 30, 45, 60, 75 };
 		CircularLinkedList<Integer> fpsLinkedList = new CircularLinkedList<>(fpsValues);
 		if (fpsLinkedList.containsNode(currentFPS)) {
@@ -25,12 +25,12 @@ public class GraphicsHandler {
 			this.currentCellSize = cellSizeLinkedList.head;
 		}
 
-		int[][] fluidSizeValues = { { 100, 100 }, { 200, 200 }, { 300, 300 }, { 400, 400 } };
-		CircularLinkedList<int[]> fluidSizeLinkedList = new CircularLinkedList<>(fluidSizeValues);
-		if (fluidSizeLinkedList.containsNode(currentFluidSize)) {
-			this.currentFluidSize = cellSizeLinkedList.getNode(currentFluidSize);
+		Integer[] iterationsValues = { 4, 8, 12, 16, 20, 24, 28, 32, 36, 40 };
+		CircularLinkedList<Integer> iterationsLinkedList = new CircularLinkedList<>(iterationsValues);
+		if (iterationsLinkedList.containsNode(currentIterations)) {
+			this.currentIterations = iterationsLinkedList.getNode(currentIterations);
 		} else {
-			this.currentFluidSize = fluidSizeLinkedList.head;
+			this.currentIterations = iterationsLinkedList.head;
 		}
 	}
 
@@ -42,12 +42,12 @@ public class GraphicsHandler {
 		return currentCellSize.payload;
 	}
 
-	public int[] getCurrentFluidSize() {
-		return currentFluidSize.payload;
+	public int getCurrentIterations() {
+		return currentIterations.payload;
 	}
 
-	public void shiftFluidSize() {
-		currentFluidSize = currentFluidSize.nextNode;
+	public void shiftIterations() {
+		currentIterations = currentIterations.nextNode;
 	}
 
 	public void shiftCellSize() {
