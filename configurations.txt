@@ -1,10 +1,10 @@
 primary-pause:Space
 primary-step-forward:N
 primary-step-backward:3
-secondary-pause:D
-secondary-step-forward:Shift
+secondary-pause:Left
+secondary-step-forward:Left
 secondary-step-backward:Open Bracket
-saving:true
-FPS:60
-fluid-size:N x N
-cell-size:N x N
+saving:false
+FPS:75
+fluid-size:100,100
+cell-size:5,5

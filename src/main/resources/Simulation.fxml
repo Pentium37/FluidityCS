@@ -34,19 +34,19 @@
                                         <Insets top="10.0" />
                                     </VBox.margin>
                                 </Label>
-                                <Slider blockIncrement="0.25" max="5.0" prefHeight="0.0" prefWidth="85.0" showTickLabels="true" showTickMarks="true" styleClass="small-text" />
+                                <Slider fx:id="viscositySlider" blockIncrement="0.25" max="5.0" prefHeight="0.0" prefWidth="85.0" showTickLabels="true" showTickMarks="true" styleClass="small-text" />
                                 <Label layoutX="107.0" layoutY="21.0" styleClass="small-text" text="Flow Speed" />
-                                <Slider blockIncrement="0.25" layoutX="11.0" layoutY="38.0" max="5.0" prefHeight="0.0" prefWidth="85.0" showTickLabels="true" showTickMarks="true" styleClass="small-text" />
+                                <Slider fx:id="flowspeedSlider" blockIncrement="0.25" layoutX="11.0" layoutY="38.0" max="5.0" prefHeight="0.0" prefWidth="85.0" showTickLabels="true" showTickMarks="true" styleClass="small-text" />
                                 <HBox alignment="TOP_CENTER" prefHeight="28.0" prefWidth="238.0" spacing="10.0" styleClass="small-text">
                                     <children>
-                                        <ChoiceBox prefWidth="110.0" />
+                                        <ChoiceBox fx:id="plotChoice" prefWidth="110.0" />
                                         <ChoiceBox prefWidth="110.0" />
                                     </children>
                                 </HBox>
                                 <HBox alignment="TOP_CENTER" layoutX="11.0" layoutY="130.0" prefHeight="28.0" prefWidth="238.0" spacing="10.0">
                                     <children>
-                                        <CheckBox mnemonicParsing="false" prefWidth="110.0" styleClass="small-text" text="Flowlines" />
-                                        <CheckBox mnemonicParsing="false" prefWidth="110.0" styleClass="small-text" text="Sensors" />
+                                        <CheckBox fx:id="flowlinesCheckBox" mnemonicParsing="false" prefHeight="16.0" prefWidth="112.0" styleClass="small-text" text="Flowlines" />
+                                        <CheckBox fx:id="sensorCheckBox" mnemonicParsing="false" prefHeight="16.0" prefWidth="74.0" styleClass="small-text" text="Sensors" />
                                     </children>
                                     <padding>
                                         <Insets top="5.0" />

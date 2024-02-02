@@ -1,11 +1,13 @@
 package com.fluidity.program.ui.controllers;
 
 import com.fluidity.program.ui.FluidUIAction;
+import com.fluidity.program.ui.GraphicsHandler;
 import com.fluidity.program.ui.ProgramState;
 import com.fluidity.program.utilities.FileHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.TabPane;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
@@ -40,18 +42,26 @@ public class SettingsController extends Controller implements Initializable {
 	private Button cellSizeSetter;
 	@FXML
 	private Button fpsSetter;
+	@FXML
+	private TabPane settingsPane;
+	GraphicsHandler graphicsHandler;
 	private boolean savingEnabled;
-	private String fluidSize;
-	private String cellSize;
+	private int[] fluidSize;
+	private int[] cellSize;
 	private int FPS;
 
 	@Override
 	public void initialize(final URL url, final ResourceBundle resourceBundle) {
 		// change later
 		savingEnabled = false;
-		fluidSize = "NxN";
-		cellSize = "NxN";
-		FPS = 60;
+
+		settingsPane.addEventFilter(KeyEvent.ANY, keyEvent -> {
+			if (keyEvent.getCode()
+					.isArrowKey()) {
+				onKeyPressed(keyEvent);
+				keyEvent.consume();
+			}
+		});
 
 		keyBindMap = new EnumMap<>(FluidUIAction.class);
 
@@ -181,16 +191,19 @@ public class SettingsController extends Controller implements Initializable {
 						fpsSetter.setText("FPS: " + FPS);
 					}
 					case "fluid-size" -> {
-						fluidSize = configuration[1];
-						fluidSizeSetter.setText("Fluid Size: " + fluidSize);
+						String[] split = configuration[1].split(",");
+						fluidSize = new int[] { Integer.parseInt(split[0]), Integer.parseInt(split[1]) };
+						fluidSizeSetter.setText("Fluid Size: (" + fluidSize[0] + "," + fluidSize[1] + ")");
 					}
 					case "cell-size" -> {
-						cellSize = configuration[1];
-						cellSizeSetter.setText("Cell Size: " + cellSize);
+						String[] split = configuration[1].split(",");
+						cellSize = new int[] { Integer.parseInt(split[0]), Integer.parseInt(split[1]) };
+						cellSizeSetter.setText("Cell Size: (" + cellSize[0] + "," + cellSize[1] + ")");
 					}
 				}
 			}
 		}
+		graphicsHandler = new GraphicsHandler(FPS, cellSize, fluidSize);
 	}
 
 	private String getFormattedKeyBindConfigurations() {
@@ -208,8 +221,8 @@ public class SettingsController extends Controller implements Initializable {
 	}
 
 	private String getFormattedGraphicsConfigurations() {
-		return "saving:" + savingEnabled + "\n" + "FPS:" + FPS + "\n" + "fluid-size:" + fluidSize + "\n" + "cell-size:"
-				+ cellSize + "\n";
+		return "saving:" + savingEnabled + "\n" + "FPS:" + FPS + "\n" + "fluid-size:" +fluidSize[0] + "," + fluidSize[1]+ "\n" + "cell-size:"
+				+ cellSize[0] + "," + cellSize[1] + "\n";
 	}
 
 	@FXML
@@ -217,4 +230,26 @@ public class SettingsController extends Controller implements Initializable {
 		savingEnabled = !savingEnabled;
 		fluidSavingSetter.setText((savingEnabled) ? "Fluid Saving: Enabled" : "Fluid Saving: Disabled");
 	}
+
+	@FXML
+	public void cellSizeSetterAction() {
+		graphicsHandler.shiftCellSize();
+		cellSize = graphicsHandler.getCurrentCellSize();
+		cellSizeSetter.setText("Cell Size: (" + cellSize[0] + "," + cellSize[1] + ")");
+	}
+
+	@FXML
+	public void fluidSizeSetterAction() {
+		graphicsHandler.shiftFluidSize();
+		fluidSize = graphicsHandler.getCurrentFluidSize();
+		fluidSizeSetter.setText("Fluid Size: (" + fluidSize[0] + "," + fluidSize[1] + ")");
+	}
+
+	@FXML
+	public void fpsSetterAction() {
+		graphicsHandler.shiftFPS();
+		FPS = graphicsHandler.getCurrentFPS();
+		fpsSetter.setText("FPS: " + FPS);
+	}
+
 }
