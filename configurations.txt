@@ -1,10 +1,10 @@
-primary-pause:Space
-primary-step-forward:N
-primary-step-backward:3
-secondary-pause:Left
-secondary-step-forward:Left
-secondary-step-backward:Open Bracket
+primary-pause:Down
+primary-step-forward:Down
+primary-step-backward:Down
+secondary-pause:Down
+secondary-step-forward:Down
+secondary-step-backward:Down
 saving:false
-FPS:75
+FPS:45
 fluid-size:100,100
-cell-size:5,5
+cell-size:1,1
