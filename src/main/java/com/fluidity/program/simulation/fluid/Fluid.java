@@ -1,4 +1,4 @@
-package com.fluidity.program.simulation;
+package com.fluidity.program.simulation.fluid;
 
 public abstract class Fluid {
 	protected int WIDTH;

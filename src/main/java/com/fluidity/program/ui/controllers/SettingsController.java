@@ -14,7 +14,7 @@ import javafx.scene.input.KeyEvent;
 import java.net.URL;
 import java.util.*;
 
-public class SettingsController extends Controller implements Initializable {
+public class SettingsController extends Controller {
 	@FXML
 	private Button primaryPauseKeyBindSetter;
 	@FXML
@@ -52,9 +52,6 @@ public class SettingsController extends Controller implements Initializable {
 
 	@Override
 	public void initialize(final URL url, final ResourceBundle resourceBundle) {
-		// change later
-		savingEnabled = false;
-
 		settingsPane.addEventFilter(KeyEvent.ANY, keyEvent -> {
 			if (keyEvent.getCode()
 					.isArrowKey()) {

@@ -12,7 +12,7 @@ import javafx.scene.control.Slider;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class SimulationController extends Controller implements Initializable {
+public class SimulationController extends Controller {
 	@FXML
 	private CheckBox flowlinesCheckBox;
 	@FXML
