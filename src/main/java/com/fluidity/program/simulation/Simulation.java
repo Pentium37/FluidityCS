@@ -16,9 +16,9 @@ public class Simulation implements Runnable, DataProvider {
 
 	public Simulation(MouseAdapter mouseAdapter) {
 		this.mouseAdapter = mouseAdapter;
-		this.CELL_LENGTH = 1;
-		this.FPS = 5;
-		this.TPS = 5;
+		this.CELL_LENGTH = 3;
+		this.FPS = 30;
+		this.TPS = 30;
 		fluid = new BoxFluid();
 	}
 

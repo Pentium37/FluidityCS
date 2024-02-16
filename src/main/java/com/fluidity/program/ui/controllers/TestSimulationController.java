@@ -35,8 +35,8 @@ public class TestSimulationController extends Controller implements MouseAdapter
 		startAdd = Instant.now();
 		simulation = new Simulation(this);
 		simulation.startSimulation();
-		this.canvas.setHeight(100);
-		this.canvas.setWidth(100);
+		this.canvas.setHeight(300);
+		this.canvas.setWidth(300);
 	}
 
 	@Override
