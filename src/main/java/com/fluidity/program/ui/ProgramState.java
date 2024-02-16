@@ -9,7 +9,8 @@ public enum ProgramState {
 	ABOUT("/About.fxml"),
 	EXIT("/Exit.fxml"),
 	SIMULATION("/Simulation.fxml"),
-	RECORDINGS("/Recordings.fxml");
+	RECORDINGS("/Recordings.fxml"),
+	TEST_SIMULATION("/TestSimulation.fxml");
 
 	// Stores path of .fxml file to load later
 	/* The string path is a private attribute because classes only need to retrieve a path rather than changing it.

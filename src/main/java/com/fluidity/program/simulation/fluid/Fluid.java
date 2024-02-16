@@ -10,8 +10,25 @@ public abstract class Fluid {
 	double dt; // change to delta time
 
 	protected Fluid() {
-		this.ITERATIONS = 20;
-		size = (WIDTH+2)*(HEIGHT+2);
+		this.WIDTH = 100;
+		this.HEIGHT = 100;
+		this.viscosity = 2;
+		this.diffusionRate = 2;
+
+		this.ITERATIONS = 4;
+		size = (WIDTH + 2) * (HEIGHT + 2);
+
+		dens = new double[size];
+		u = new double[size];
+		v = new double[size];
+
+		for (int i = 0; i < WIDTH + 1; i++) {
+			for (int j = 0; j < HEIGHT + 1; j++) {
+				dens[index(i, j)] = 0;
+				u[index(i, j)] = 0;
+				v[index(i, j)] = 0;
+			}
+		}
 	}
 
 	public void step(double deltaTime) {
@@ -81,7 +98,7 @@ public abstract class Fluid {
 	public void project(double[] u, double[] v) {
 		double[] pressure = new double[size];
 		double[] divergenceField = new double[size];
-		double h = 0; //CELL LENGTH;
+		double h = 1; //CELL LENGTH;
 
 		for (int i = 1; i < WIDTH + 1; i++) {
 			for (int j = 1; j < HEIGHT + 1; j++) {

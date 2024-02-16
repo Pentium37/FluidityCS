@@ -52,7 +52,8 @@ public class Manager {
 
 			// Creates a scene and controller corresponding to the FXML loader found
 			// Places the objects into the map so that they can be retrieved if needed
-			scenes.put(programState, new Scene(loader.load(), 1280, 720));
+			//			scenes.put(programState, new Scene(loader.load(), 1280, 720));
+			scenes.put(programState, new Scene(loader.load(), 400, 400));
 			controllers.put(programState, loader.getController());
 		} catch (IOException e) {
 			throw new RuntimeException(e);
