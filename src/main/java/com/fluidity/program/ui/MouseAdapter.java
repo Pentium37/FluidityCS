@@ -18,6 +18,4 @@ public interface MouseAdapter {
 	void mouseDragged(MouseEvent e);
 
 	void consumeSources(Consumer<FluidInput> sourceConsumer);
-
-	void render(double[] dens);
 }
