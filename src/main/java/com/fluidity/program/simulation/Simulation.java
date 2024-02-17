@@ -4,10 +4,11 @@ import com.fluidity.program.simulation.fluid.BoxFluid;
 import com.fluidity.program.simulation.fluid.Fluid;
 import com.fluidity.program.ui.MouseAdapter;
 import com.fluidity.program.ui.controllers.TestSimulationController;
+import javafx.application.Platform;
 
 import java.util.concurrent.TimeUnit;
 
-public class Simulation implements Runnable, DataProvider {
+public class Simulation implements Runnable {
 	public int CELL_LENGTH;
 	public int FPS, TPS;
 	private Thread simulationThread;
@@ -20,12 +21,6 @@ public class Simulation implements Runnable, DataProvider {
 		this.FPS = 30;
 		this.TPS = 30;
 		fluid = new BoxFluid();
-	}
-
-	@Override
-	public byte provideData(final int x, final int y) {
-		double num = fluid.dens[fluid.index(x / CELL_LENGTH, y / CELL_LENGTH)];
-		return (byte) ((num > 255) ? 255 : num);
 	}
 
 	public void startSimulation() {
@@ -91,7 +86,8 @@ public class Simulation implements Runnable, DataProvider {
 	}
 
 	public void render() {
-		mouseAdapter.render(this);
+		double[] arrayToPass = fluid.dens.clone();
+		Platform.runLater(() -> mouseAdapter.render(arrayToPass));
 	}
 
 	private static double nanosToSeconds(long nanos) {

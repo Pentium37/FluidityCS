@@ -1,16 +1,21 @@
 package com.fluidity.program.ui.controllers;
 
-import com.fluidity.program.simulation.DataProvider;
 import com.fluidity.program.simulation.FluidInput;
 import com.fluidity.program.simulation.Simulation;
+import com.fluidity.program.simulation.fluid.Fluid;
 import com.fluidity.program.ui.MouseAdapter;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.PixelFormat;
+import javafx.scene.image.PixelWriter;
+import javafx.scene.image.WritablePixelFormat;
 import javafx.scene.input.MouseEvent;
-
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 
 import java.net.URL;
+import java.nio.IntBuffer;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -28,6 +33,8 @@ public class TestSimulationController extends Controller implements MouseAdapter
 	private List<FluidInput> sourceQueue;
 	private Instant startAdd;
 	private int[] previousCoords;
+	private int IMAGE_WIDTH;
+	private int IMAGE_HEIGHT;
 
 	@Override
 	public void initialize(final URL url, final ResourceBundle resourceBundle) {
@@ -35,8 +42,10 @@ public class TestSimulationController extends Controller implements MouseAdapter
 		startAdd = Instant.now();
 		simulation = new Simulation(this);
 		simulation.startSimulation();
-		this.canvas.setHeight(300);
-		this.canvas.setWidth(300);
+		IMAGE_WIDTH = 300;
+		IMAGE_HEIGHT = 300;
+		this.canvas.setHeight(IMAGE_HEIGHT);
+		this.canvas.setWidth(IMAGE_WIDTH);
 	}
 
 	@Override
@@ -87,23 +96,36 @@ public class TestSimulationController extends Controller implements MouseAdapter
 		sourceQueue.clear();
 	}
 
+
+	public int index(int i, int j) {
+		if (i < 0) {
+			i = 0;
+		}
+		if (i > 100 + 1) {
+			i = 100 + 1;
+		}
+		if (j < 0) {
+			j = 0;
+		}
+		if (j > 100 + 1) {
+			j = 100 + 1;
+		}
+		return (i + j * (100 + 2));
+	}
+
 	@Override
-	public synchronized void render(DataProvider pixelStream) {
-		GraphicsContext gc = canvas.getGraphicsContext2D();
-
-		for (int y = 0; y <  canvas.getHeight() ; y++) {
-			for (int x = 0; x < canvas.getWidth(); x++) {
-				// Obtain the pixel value from the pixelStream
-				byte pixelValue = pixelStream.provideData(x, y);
-
-				// Convert pixel value to grayscale color (0-255)
-				int color = pixelValue & 0xFF;
-
-				// Set color and draw a pixel
-				gc.setFill(javafx.scene.paint.Color.rgb(color, color, color));
-				gc.fillRect(x, y, 1, 1);
+	public void render(double[] dens) {
+		PixelWriter pixelWriter = canvas.getGraphicsContext2D()
+				.getPixelWriter();
+		int[] buffer = new int[IMAGE_WIDTH*IMAGE_HEIGHT];
+		for (int y = 0; y <  canvas.getHeight() ; y += 3) {
+			for (int x = 0; x < canvas.getWidth(); x += 3) {
+				double num = dens[index(x / 3, y / 3)];
+				int pixelValue = (int) ((num > 255) ? 255 : num);
+				buffer[y*300 + x] = pixelValue;
 			}
 		}
+		pixelWriter.setPixels(0,0,IMAGE_WIDTH,IMAGE_HEIGHT, PixelFormat.getIntArgbInstance(), buffer, 0, IMAGE_WIDTH);
 	}
 
 }

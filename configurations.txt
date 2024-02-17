@@ -2,7 +2,7 @@ primary-pause:A
 primary-step-forward:Space
 secondary-pause:S
 secondary-step-forward:Left
-saving:true
-FPS:15
+saving:false
+FPS:75
 iterations:4
 cell-size:1,1

@@ -1,7 +1,7 @@
 package com.fluidity.program.ui;
 
-import com.fluidity.program.simulation.DataProvider;
 import com.fluidity.program.simulation.FluidInput;
+import com.fluidity.program.simulation.fluid.Fluid;
 import javafx.fxml.FXML;
 import javafx.scene.input.MouseEvent;
 
@@ -19,5 +19,5 @@ public interface MouseAdapter {
 
 	void consumeSources(Consumer<FluidInput> sourceConsumer);
 
-	void render(DataProvider pixelStream);
+	void render(double[] dens);
 }
