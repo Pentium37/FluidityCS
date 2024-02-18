@@ -33,24 +33,24 @@ public class TestSimulationController extends Controller implements MouseAdapter
 	private int IMAGE_HEIGHT;
 	private int CELL_LENGTH;
 
-
 	private static final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor(r -> {
 		Thread thread = new Thread(r);
 		thread.setDaemon(true);
 		return thread;
 	});
+
 	@Override
 	public void initialize(final URL url, final ResourceBundle resourceBundle) {
 		sourceQueue = new ArrayList<>();
 		startAdd = Instant.now();
 
-		IMAGE_WIDTH = 120;
-		IMAGE_HEIGHT = 120;
+		IMAGE_WIDTH = 200;
+		IMAGE_HEIGHT = 200;
 		CELL_LENGTH = 1;
 
 		this.canvas.setHeight(IMAGE_HEIGHT);
 		this.canvas.setWidth(IMAGE_WIDTH);
-		EXECUTOR.submit(new SimulationThreaded(canvas, this, CELL_LENGTH));
+		EXECUTOR.submit(new SimulationThreaded(canvas, this, IMAGE_WIDTH, IMAGE_HEIGHT, CELL_LENGTH));
 	}
 
 	@Override
@@ -91,13 +91,14 @@ public class TestSimulationController extends Controller implements MouseAdapter
 			long timeHeld = Duration.between(startAdd, Instant.now())
 					.toMillis();
 			startAdd = Instant.now();
-			sourceQueue.add(
-					new FluidInput(previousCoords[0], previousCoords[1], 0, 0, timeHeld * 20, CELL_LENGTH));
+			sourceQueue.add(new FluidInput(previousCoords[0], previousCoords[1], 0, 0, timeHeld * 20, CELL_LENGTH));
 		}
 
 		for (FluidInput source : sourceQueue) {
 			sourceConsumer.accept(source);
+			System.out.println(source.toString());
 		}
+
 		sourceQueue.clear();
 	}
 }
