@@ -96,7 +96,6 @@ public class TestSimulationController extends Controller implements MouseAdapter
 
 		for (FluidInput source : sourceQueue) {
 			sourceConsumer.accept(source);
-			System.out.println(source.toString());
 		}
 
 		sourceQueue.clear();

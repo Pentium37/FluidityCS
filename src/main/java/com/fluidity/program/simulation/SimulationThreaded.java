@@ -16,6 +16,9 @@ public class SimulationThreaded implements Runnable {
 	private int IMAGE_WIDTH;
 	private int IMAGE_HEIGHT;
 	private int CELL_LENGTH;
+
+	private int FLUID_WIDTH;
+	private int FLUID_HEIGHT;
 	//	public static final double FPS = 10, TPS = 10;
 
 	public SimulationThreaded(Canvas canvas, MouseAdapter mouseAdapter, int IMAGE_WIDTH, int IMAGE_HEIGHT,
@@ -30,34 +33,54 @@ public class SimulationThreaded implements Runnable {
 	@Override
 	public void run() {
 		Fluid fluid = new BoxFluid(IMAGE_WIDTH / CELL_LENGTH, IMAGE_HEIGHT / CELL_LENGTH, CELL_LENGTH, 2, 2, 4);
+		this.FLUID_WIDTH = fluid.WIDTH;
+		this.FLUID_HEIGHT = fluid.HEIGHT;
 
 		long current = System.nanoTime();
 		while (true) {
 			long l = System.nanoTime();
 			double deltaMillis = (l - current) / 1_000_000_000.0;
+
 			fluid.step(deltaMillis);
+			addSourcesFromUI(fluid);
 
-			Platform.runLater(() -> {
-				addSourcesFromUI(fluid);
-				PixelWriter writer = canvas.getGraphicsContext2D()
-						.getPixelWriter();
-
-				for (int y = 0; y < fluid.HEIGHT; y++) {
-					for (int x = 0; x < fluid.WIDTH; x++) {
-						double num = fluid.dens[fluid.index(x, y)];
-						int color = (byte) (num > 255 ? 255 : num) & 0xFF;
-						for (int i = 0; i < CELL_LENGTH; i++) {
-							for (int j = 0; j < CELL_LENGTH; j++) {
-								writer.setColor((x * CELL_LENGTH + i), (y * CELL_LENGTH + j), Color.grayRgb(color));
-							}
-						}
-					}
-				}
-			});
-
+			Platform.runLater(() -> render(fluid.dens.clone()));
 			current = l;
 		}
+
 	}
+	public void render(double[] dens) {
+		PixelWriter writer = canvas.getGraphicsContext2D()
+				.getPixelWriter();
+
+		for (int y = 0; y < FLUID_HEIGHT; y++) {
+			for (int x = 0; x < FLUID_WIDTH; x++) {
+				double num = dens[index(x, y)];
+				int color = (byte) (num > 255 ? 255 : num) & 0xFF;
+				for (int i = 0; i < CELL_LENGTH; i++) {
+					for (int j = 0; j < CELL_LENGTH; j++) {
+						writer.setColor((x * CELL_LENGTH + i), (y * CELL_LENGTH + j), Color.grayRgb(color));
+					}
+				}
+			}
+		}
+	}
+	public int index(int i, int j) {
+		if (i < 0) {
+			i = 0;
+		}
+		if (i > FLUID_WIDTH + 1) {
+			i = FLUID_WIDTH + 1;
+		}
+		if (j < 0) {
+			j = 0;
+		}
+		if (j > FLUID_HEIGHT + 1) {
+			j = FLUID_HEIGHT + 1;
+		}
+		return (i + j * (FLUID_WIDTH + 2));
+	}
+
 
 	//	@Override
 	//	public void run() {
