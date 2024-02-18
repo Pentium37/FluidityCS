@@ -3,8 +3,8 @@
 <?import javafx.scene.canvas.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane fx:id="simulationPane" prefHeight="360.0" prefWidth="360.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.fluidity.program.ui.controllers.TestSimulationController">
+<AnchorPane fx:id="simulationPane" prefHeight="120.0" prefWidth="120.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.fluidity.program.ui.controllers.TestSimulationController">
     <children>
-        <Canvas fx:id="canvas" height="360.0" onMouseDragged="#mouseDragged" onMousePressed="#mousePressed" onMouseReleased="#mouseReleased" width="360.0" />
+        <Canvas fx:id="canvas" height="120.0" onMouseDragged="#mouseDragged" onMousePressed="#mousePressed" onMouseReleased="#mouseReleased" width="120.0" />
     </children>
 </AnchorPane>

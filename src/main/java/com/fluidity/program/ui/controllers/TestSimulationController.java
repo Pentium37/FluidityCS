@@ -43,8 +43,9 @@ public class TestSimulationController extends Controller implements MouseAdapter
 	public void initialize(final URL url, final ResourceBundle resourceBundle) {
 		sourceQueue = new ArrayList<>();
 		startAdd = Instant.now();
-		IMAGE_WIDTH = 360;
-		IMAGE_HEIGHT = 360;
+
+		IMAGE_WIDTH = 120;
+		IMAGE_HEIGHT = 120;
 		CELL_LENGTH = 5;
 
 		this.canvas.setHeight(IMAGE_HEIGHT);

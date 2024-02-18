@@ -21,7 +21,7 @@ public class SimulationThreaded implements Runnable {
 
 	@Override
 	public void run() {
-		Fluid fluid = new BoxFluid(360/CELL_LENGTH, 360/CELL_LENGTH, CELL_LENGTH,2, 2, 4);
+		Fluid fluid = new BoxFluid(120 / CELL_LENGTH, 120 / CELL_LENGTH, CELL_LENGTH, 2, 2, 4);
 
 		long current = System.nanoTime();
 		while (true) {
@@ -31,12 +31,18 @@ public class SimulationThreaded implements Runnable {
 
 			Platform.runLater(() -> {
 				addSourcesFromUI(fluid);
-				PixelWriter writer = canvas.getGraphicsContext2D().getPixelWriter();
-				for (int y = 0; y < canvas.getHeight(); y++) {
-					for (int x = 0; x < canvas.getWidth(); x++) {
-						double num = fluid.dens[fluid.index(x / 5, y / 5)];
+				PixelWriter writer = canvas.getGraphicsContext2D()
+						.getPixelWriter();
+
+				for (int y = 0; y < fluid.HEIGHT; y++) {
+					for (int x = 0; x < fluid.WIDTH; x++) {
+						double num = fluid.dens[fluid.index(x, y)];
 						int color = (byte) (num > 255 ? 255 : num) & 0xFF;
-						writer.setColor(x, y, Color.grayRgb(color));
+						for (int i = 0; i < CELL_LENGTH; i++) {
+							for (int j = 0; j < CELL_LENGTH; j++) {
+								writer.setColor(x * CELL_LENGTH + i, y * CELL_LENGTH + j, Color.grayRgb(color));
+							}
+						}
 					}
 				}
 			});
@@ -45,6 +51,13 @@ public class SimulationThreaded implements Runnable {
 		}
 	}
 
+	//for (int y = 0; y < canvas.getHeight(); y++) {
+	//		for (int x = 0; x < canvas.getWidth(); x++) {
+	//			double num = fluid.dens[fluid.index(x / CELL_LENGTH, y / CELL_LENGTH)];
+	//			int color = (byte) (num > 255 ? 255 : num) & 0xFF;
+	//			writer.setColor(x, y, Color.grayRgb(color));
+	//		}
+	//	}
 	private void addSourcesFromUI(Fluid fluid) {
 		synchronized (fluid) {
 			mouseAdapter.consumeSources(fluidInput -> {

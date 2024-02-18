@@ -1,8 +1,8 @@
 package com.fluidity.program.simulation.fluid;
 
 public abstract class Fluid {
-	protected int WIDTH;
-	protected int HEIGHT;
+	public int WIDTH;
+	public int HEIGHT;
 	private int CELL_LENGTH;
 	private int size;
 	private final int ITERATIONS;
@@ -100,7 +100,7 @@ public abstract class Fluid {
 	public void project(double[] u, double[] v) {
 		double[] pressure = new double[size];
 		double[] divergenceField = new double[size];
-		double h = CELL_LENGTH; //CELL LENGTH;
+		double h = 1; //CELL LENGTH;
 
 		for (int i = 1; i < WIDTH + 1; i++) {
 			for (int j = 1; j < HEIGHT + 1; j++) {
