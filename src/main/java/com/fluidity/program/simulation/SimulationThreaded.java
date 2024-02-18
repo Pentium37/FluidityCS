@@ -11,31 +11,36 @@ import javafx.scene.paint.Color;
 public class SimulationThreaded implements Runnable {
 	private final Canvas canvas;
 	private final MouseAdapter mouseAdapter;
+	private int CELL_LENGTH;
 
-	public SimulationThreaded(Canvas canvas, MouseAdapter mouseAdapter) {
+	public SimulationThreaded(Canvas canvas, MouseAdapter mouseAdapter, int CELL_LENGTH) {
 		this.canvas = canvas;
 		this.mouseAdapter = mouseAdapter;
+		this.CELL_LENGTH = CELL_LENGTH;
 	}
 
 	@Override
 	public void run() {
-		Fluid fluid = new BoxFluid();
+		Fluid fluid = new BoxFluid(360/CELL_LENGTH, 360/CELL_LENGTH, CELL_LENGTH,2, 2, 4);
+
 		long current = System.nanoTime();
 		while (true) {
 			long l = System.nanoTime();
 			double deltaMillis = (l - current) / 1_000_000_000.0;
 			fluid.step(deltaMillis);
+
 			Platform.runLater(() -> {
 				addSourcesFromUI(fluid);
 				PixelWriter writer = canvas.getGraphicsContext2D().getPixelWriter();
 				for (int y = 0; y < canvas.getHeight(); y++) {
 					for (int x = 0; x < canvas.getWidth(); x++) {
-						double num = fluid.dens[fluid.index(x / 3, y / 3)];
+						double num = fluid.dens[fluid.index(x / 5, y / 5)];
 						int color = (byte) (num > 255 ? 255 : num) & 0xFF;
 						writer.setColor(x, y, Color.grayRgb(color));
 					}
 				}
 			});
+
 			current = l;
 		}
 	}

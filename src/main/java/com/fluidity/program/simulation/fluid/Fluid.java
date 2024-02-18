@@ -3,20 +3,22 @@ package com.fluidity.program.simulation.fluid;
 public abstract class Fluid {
 	protected int WIDTH;
 	protected int HEIGHT;
+	private int CELL_LENGTH;
 	private int size;
 	private final int ITERATIONS;
 	public double[] dens, u, v; // change to horizontal, vertical and density
 	public double diffusionRate, viscosity;
-	double dt; // change to delta time
+	private double dt; // change to delta time
 
-	protected Fluid() {
-		this.WIDTH = 100;
-		this.HEIGHT = 100;
-		this.viscosity = 2;
-		this.diffusionRate = 2;
+	protected Fluid(int WIDTH, int HEIGHT, int CELL_LENGTH, double viscosity, double diffusionRate, int ITERATIONS) {
+		this.WIDTH = WIDTH;
+		this.HEIGHT = HEIGHT;
+		this.CELL_LENGTH = CELL_LENGTH;
+		this.size = (WIDTH + 2) * (HEIGHT + 2);
 
-		this.ITERATIONS = 4;
-		size = (WIDTH + 2) * (HEIGHT + 2);
+		this.viscosity = viscosity;
+		this.diffusionRate = diffusionRate;
+		this.ITERATIONS = ITERATIONS;
 
 		dens = new double[size];
 		u = new double[size];
@@ -51,7 +53,7 @@ public abstract class Fluid {
 	}
 
 	public void diffuse(int b, double[] destination, double[] source, double diffusionRate) {
-		double a = dt * diffusionRate; // be wary
+		double a = dt * diffusionRate;
 		gaussSeidel(b, destination, source, a, 1 + 4 * a);
 	}
 
@@ -98,7 +100,7 @@ public abstract class Fluid {
 	public void project(double[] u, double[] v) {
 		double[] pressure = new double[size];
 		double[] divergenceField = new double[size];
-		double h = 3; //CELL LENGTH;
+		double h = CELL_LENGTH; //CELL LENGTH;
 
 		for (int i = 1; i < WIDTH + 1; i++) {
 			for (int j = 1; j < HEIGHT + 1; j++) {

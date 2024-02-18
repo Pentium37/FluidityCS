@@ -2,6 +2,11 @@ package com.fluidity.program.simulation.fluid;
 
 public class BoxFluid extends Fluid{
 
+	public BoxFluid(final int WIDTH, final int HEIGHT, final int CELL_LENGTH, final double viscosity,
+			final double diffusionRate, final int ITERATIONS) {
+		super(WIDTH, HEIGHT, CELL_LENGTH, viscosity, diffusionRate, ITERATIONS);
+	}
+
 	@Override
 	void setBoundary(final int b, final double[] destination) {
 		// make a global factor for -1 or 1

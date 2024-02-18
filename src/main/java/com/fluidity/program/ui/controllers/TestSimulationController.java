@@ -2,20 +2,13 @@ package com.fluidity.program.ui.controllers;
 
 import com.fluidity.program.simulation.FluidInput;
 import com.fluidity.program.simulation.SimulationThreaded;
-import com.fluidity.program.simulation.fluid.Fluid;
 import com.fluidity.program.ui.MouseAdapter;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.PixelFormat;
-import javafx.scene.image.PixelWriter;
-import javafx.scene.image.WritablePixelFormat;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
+import javafx.scene.layout.AnchorPane;
 
 import java.net.URL;
-import java.nio.IntBuffer;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -30,12 +23,16 @@ import static java.lang.Math.hypot;
 public class TestSimulationController extends Controller implements MouseAdapter {
 	@FXML
 	Canvas canvas;
+	@FXML
+	AnchorPane simulationPane;
 	private boolean mouseHeld;
 	private List<FluidInput> sourceQueue;
 	private Instant startAdd;
 	private int[] previousCoords;
 	private int IMAGE_WIDTH;
 	private int IMAGE_HEIGHT;
+	private int CELL_LENGTH;
+
 
 	private static final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor(r -> {
 		Thread thread = new Thread(r);
@@ -46,11 +43,13 @@ public class TestSimulationController extends Controller implements MouseAdapter
 	public void initialize(final URL url, final ResourceBundle resourceBundle) {
 		sourceQueue = new ArrayList<>();
 		startAdd = Instant.now();
-		IMAGE_WIDTH = 300;
-		IMAGE_HEIGHT = 300;
+		IMAGE_WIDTH = 360;
+		IMAGE_HEIGHT = 360;
+		CELL_LENGTH = 5;
+
 		this.canvas.setHeight(IMAGE_HEIGHT);
 		this.canvas.setWidth(IMAGE_WIDTH);
-		EXECUTOR.submit(new SimulationThreaded(canvas, this));
+		EXECUTOR.submit(new SimulationThreaded(canvas, this, CELL_LENGTH));
 	}
 
 	@Override
@@ -82,7 +81,7 @@ public class TestSimulationController extends Controller implements MouseAdapter
 		startAdd = Instant.now();
 		previousCoords = new int[] { (int) e.getX(), (int) e.getY() };
 		sourceQueue.add(new FluidInput(previousCoords[0], previousCoords[1], velocityX, velocityY,
-				6.0 * hypot(velocityX, velocityY), 3));
+				6.0 * hypot(velocityX, velocityY), CELL_LENGTH));
 	}
 
 	@Override
@@ -92,7 +91,7 @@ public class TestSimulationController extends Controller implements MouseAdapter
 					.toMillis();
 			startAdd = Instant.now();
 			sourceQueue.add(
-					new FluidInput(previousCoords[0], previousCoords[1], 0, 0, timeHeld * 20, 3));
+					new FluidInput(previousCoords[0], previousCoords[1], 0, 0, timeHeld * 20, CELL_LENGTH));
 		}
 
 		for (FluidInput source : sourceQueue) {
