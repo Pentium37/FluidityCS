@@ -46,7 +46,7 @@ public class TestSimulationController extends Controller implements MouseAdapter
 
 		IMAGE_WIDTH = 120;
 		IMAGE_HEIGHT = 120;
-		CELL_LENGTH = 5;
+		CELL_LENGTH = 1;
 
 		this.canvas.setHeight(IMAGE_HEIGHT);
 		this.canvas.setWidth(IMAGE_WIDTH);
