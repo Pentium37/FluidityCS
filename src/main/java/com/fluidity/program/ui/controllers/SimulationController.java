@@ -2,15 +2,13 @@ package com.fluidity.program.ui.controllers;
 
 import com.fluidity.program.simulation.FluidInput;
 import com.fluidity.program.simulation.SimulationThreaded;
+import com.fluidity.program.simulation.fluid.Fluid;
 import com.fluidity.program.ui.MouseListener;
 import com.fluidity.program.ui.ProgramState;
 import com.fluidity.program.utilities.ExtraMath;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.Slider;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 
 import java.net.URL;
@@ -41,6 +39,8 @@ public class SimulationController extends Controller implements MouseListener {
 	@FXML
 	private Label flowspeedLabel;
 	@FXML
+	private Button startSimulationButton;
+	@FXML
 	private ChoiceBox<String> plotChoice;
 	private double viscosity;
 	private double flowspeed;
@@ -53,6 +53,7 @@ public class SimulationController extends Controller implements MouseListener {
 	private int[] previousCoords;
 	private int CELL_LENGTH;
 	private SimulationThreaded simulation;
+	private boolean simulationStarted;
 
 	private static final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor(r -> {
 		Thread thread = new Thread(r);
@@ -74,7 +75,7 @@ public class SimulationController extends Controller implements MouseListener {
 		CELL_LENGTH = 5;
 
 		simulation = new SimulationThreaded(canvasX, this, IMAGE_WIDTH, IMAGE_HEIGHT, CELL_LENGTH);
-		EXECUTOR.submit(simulation);
+		simulationStarted = false;
 	}
 
 	@Override
@@ -144,6 +145,22 @@ public class SimulationController extends Controller implements MouseListener {
 	@FXML
 	private void onGoToSettingsClick() {
 		manager.loadScene(ProgramState.SETTINGS);
+	}
+
+	@FXML
+	private void onStartSimulationClick() {
+		if (!simulationStarted) {
+			viscositySlider = new Slider();
+			flowspeedSlider = new Slider();
+			EXECUTOR.submit(simulation);
+			startSimulationButton.setText("Pause Simulation");
+			simulationStarted = true;
+		} else {
+			Fluid fluid = simulation.getFluid();
+			EXECUTOR.shutdown();
+			createListeners();
+			startSimulationButton.setText("Start Simulation");
+		}
 	}
 
 	private void createListeners() {

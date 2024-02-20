@@ -153,4 +153,8 @@ public class SimulationThreaded implements Runnable {
 	public void setDiffusionRate(double diffusionRate) {
 		fluid.diffusionRate = diffusionRate;
 	}
+
+	public Fluid getFluid() {
+		return this.fluid;
+	}
 }
