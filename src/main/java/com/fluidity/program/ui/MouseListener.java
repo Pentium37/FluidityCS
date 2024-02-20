@@ -1,13 +1,12 @@
 package com.fluidity.program.ui;
 
 import com.fluidity.program.simulation.FluidInput;
-import com.fluidity.program.simulation.fluid.Fluid;
 import javafx.fxml.FXML;
 import javafx.scene.input.MouseEvent;
 
 import java.util.function.Consumer;
 
-public interface MouseAdapter {
+public interface MouseListener {
 	@FXML
 	void mousePressed(MouseEvent e);
 

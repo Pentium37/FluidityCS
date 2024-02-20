@@ -7,7 +7,6 @@ public class FluidInput {
 	double density;
 	int x;
 	int y;
-	double cellLength;
 
 	public FluidInput(int x, int y, double forceX, double forceY, double density, int cellLength) {
 		this.x = (x / cellLength);

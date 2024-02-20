@@ -2,69 +2,116 @@ package com.fluidity.program.simulation;
 
 import com.fluidity.program.simulation.fluid.BoxFluid;
 import com.fluidity.program.simulation.fluid.Fluid;
-import com.fluidity.program.ui.MouseAdapter;
-import javafx.application.Platform;
+import com.fluidity.program.ui.MouseListener;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelWriter;
-import javafx.scene.paint.Color;
-
-import java.util.concurrent.TimeUnit;
 
 public class SimulationThreaded implements Runnable {
 	private final Canvas canvas;
-	private final MouseAdapter mouseAdapter;
-	private int IMAGE_WIDTH;
-	private int IMAGE_HEIGHT;
-	private int CELL_LENGTH;
-
+	private final MouseListener mouseAdapter;
+	private final int IMAGE_WIDTH;
+	private final int IMAGE_HEIGHT;
+	private final int CELL_LENGTH;
 	private int FLUID_WIDTH;
 	private int FLUID_HEIGHT;
+	private Fluid fluid;
 	//	public static final double FPS = 10, TPS = 10;
 
-	public SimulationThreaded(Canvas canvas, MouseAdapter mouseAdapter, int IMAGE_WIDTH, int IMAGE_HEIGHT,
+	public SimulationThreaded(Canvas canvas, MouseListener mouseAdapter, int IMAGE_WIDTH, int IMAGE_HEIGHT,
 			int CELL_LENGTH) {
 		this.canvas = canvas;
 		this.mouseAdapter = mouseAdapter;
 		this.CELL_LENGTH = CELL_LENGTH;
 		this.IMAGE_WIDTH = IMAGE_WIDTH;
 		this.IMAGE_HEIGHT = IMAGE_HEIGHT;
+		this.fluid = new BoxFluid(IMAGE_WIDTH / CELL_LENGTH, IMAGE_HEIGHT / CELL_LENGTH, CELL_LENGTH, 1, 1, 4);
 	}
+
+//	@Override
+//	public void run() {
+//		Fluid fluid = new BoxFluid(IMAGE_WIDTH / CELL_LENGTH, IMAGE_HEIGHT / CELL_LENGTH, CELL_LENGTH, 2, 2, 4);
+//		this.FLUID_WIDTH = fluid.WIDTH;
+//		this.FLUID_HEIGHT = fluid.HEIGHT;
+//
+//		long current = System.nanoTime();
+//		while (true) {
+//			long l = System.nanoTime();
+//			double deltaMillis = (l - current) / 1_000_000_000.0;
+//
+//			fluid.step(deltaMillis);
+//			addSourcesFromUI(fluid);
+//
+//			render(fluid.dens.clone()); //run later
+//
+//			current = l;
+//		}
+//	}
 
 	@Override
 	public void run() {
-		Fluid fluid = new BoxFluid(IMAGE_WIDTH / CELL_LENGTH, IMAGE_HEIGHT / CELL_LENGTH, CELL_LENGTH, 2, 2, 4);
+
 		this.FLUID_WIDTH = fluid.WIDTH;
 		this.FLUID_HEIGHT = fluid.HEIGHT;
 
-		long current = System.nanoTime();
+		final double TPS = 60; // Ticks Per Second
+		final double TIME_PER_TICK = 1.0 / TPS;
+		final double DESIRED_FPS = 60; // Desired Frames Per Second
+		final double TIME_PER_FRAME = 1.0 / DESIRED_FPS;
+		long lastTime = System.nanoTime();
+		double unprocessedTime = 0;
+		double frameTime = 0;
+
 		while (true) {
-			long l = System.nanoTime();
-			double deltaMillis = (l - current) / 1_000_000_000.0;
+			long now = System.nanoTime();
+			long passedTime = now - lastTime;
+			lastTime = now;
+			unprocessedTime += passedTime / 1_000_000_000.0;
+			frameTime += passedTime / 1_000_000_000.0;
 
-			fluid.step(deltaMillis);
-			addSourcesFromUI(fluid);
+			// Update fluid and handle inputs as many times as needed to catch up with the target TPS
+			while (unprocessedTime > TIME_PER_TICK) {
+				double deltaTime = TIME_PER_TICK; // Delta time is constant for each tick
+				fluid.step(deltaTime);
+				addSourcesFromUI(fluid);
+				unprocessedTime -= TIME_PER_TICK;
+			}
 
-			Platform.runLater(() -> render(fluid.dens.clone()));
-			current = l;
-		}
+			// Render if it's time for a new frame
+			if (frameTime >= TIME_PER_FRAME) {
+				render(fluid.dens.clone()); // Render with the most recent fluid density
+				frameTime = 0;
+			}
 
-	}
-	public void render(double[] dens) {
-		PixelWriter writer = canvas.getGraphicsContext2D()
-				.getPixelWriter();
-
-		for (int y = 0; y < FLUID_HEIGHT; y++) {
-			for (int x = 0; x < FLUID_WIDTH; x++) {
-				double num = dens[index(x, y)];
-				int color = (byte) (num > 255 ? 255 : num) & 0xFF;
-				for (int i = 0; i < CELL_LENGTH; i++) {
-					for (int j = 0; j < CELL_LENGTH; j++) {
-						writer.setColor((x * CELL_LENGTH + i), (y * CELL_LENGTH + j), Color.grayRgb(color));
-					}
+			// Sleep to cap the rendering FPS
+			long sleepTime = (long) ((TIME_PER_FRAME - frameTime) * 1_000_000_000);
+			if (sleepTime > 0) {
+				try {
+					Thread.sleep(sleepTime / 1_000_000, (int) (sleepTime % 1_000_000));
+				} catch (InterruptedException e) {
+					e.printStackTrace();
 				}
 			}
 		}
 	}
+
+	public void render(double[] dens) {
+		int[] buffer = new int[IMAGE_WIDTH * IMAGE_HEIGHT];
+
+		for (int y = 0; y < IMAGE_HEIGHT; y++) {
+			for (int x = 0; x < IMAGE_WIDTH; x++) {
+				double num = dens[index(x/CELL_LENGTH, y/CELL_LENGTH)];
+				int color = (int) (num > 255 ? 255 : num);
+				int rgb = (255 << 24) | (color << 16) | (color << 8) | color; // Set alpha channel to fully opaque
+				buffer[x + y * IMAGE_WIDTH] = rgb;
+			}
+		}
+
+		PixelWriter writer = canvas.getGraphicsContext2D().getPixelWriter();
+		writer.setPixels(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT,
+				PixelFormat.getIntArgbInstance(), buffer, 0, IMAGE_WIDTH);
+	}
+
 	public int index(int i, int j) {
 		if (i < 0) {
 			i = 0;
@@ -81,71 +128,6 @@ public class SimulationThreaded implements Runnable {
 		return (i + j * (FLUID_WIDTH + 2));
 	}
 
-
-	//	@Override
-	//	public void run() {
-	//		double deltaTimeSeconds = 1.0 / TPS;
-	//		double lastFrameTime = nanosToSeconds(System.nanoTime());
-	//		double secondsToConsume = 0.0;
-	//		Fluid fluid = new BoxFluid(120 / CELL_LENGTH, 120 / CELL_LENGTH, CELL_LENGTH, 2, 2, 4);
-	//
-	//		while (true) {
-	//			double currentFrameTime = nanosToSeconds(System.nanoTime());
-	//			double lastFrameNeeded = currentFrameTime - lastFrameTime;
-	//			lastFrameTime = currentFrameTime;
-	//
-	//			secondsToConsume += lastFrameNeeded;
-	//			while (secondsToConsume >= deltaTimeSeconds) {
-	//				fluid.step(deltaTimeSeconds);
-	//				secondsToConsume -= deltaTimeSeconds;
-	//			}
-	//
-	//			Platform.runLater(() -> {
-	//				addSourcesFromUI(fluid);
-	//				PixelWriter writer = canvas.getGraphicsContext2D()
-	//						.getPixelWriter();
-	//
-	//				for (int y = 0; y < fluid.HEIGHT; y++) {
-	//					for (int x = 0; x < fluid.WIDTH; x++) {
-	//						double num = fluid.dens[fluid.index(x, y)];
-	//						int color = (byte) (num > 255 ? 255 : num) & 0xFF;
-	//						for (int i = 0; i < CELL_LENGTH; i++) {
-	//							for (int j = 0; j < CELL_LENGTH; j++) {
-	//								writer.setColor(x * CELL_LENGTH + i, y * CELL_LENGTH + j, Color.grayRgb(color));
-	//							}
-	//						}
-	//					}
-	//				}
-	//			});
-	//
-	//			double currentFPS = 1.0 / lastFrameNeeded;
-	//			if (currentFPS > FPS) {
-	//				double targetSecondsPerFrame = 1.0 / FPS;
-	//				double secondsToWaste = Math.abs(targetSecondsPerFrame - lastFrameNeeded) / 1000000;
-	//				try {
-	//					TimeUnit.SECONDS.sleep(secondsToMillis(secondsToWaste));
-	//				} catch (InterruptedException e) {
-	//					throw new RuntimeException(e);
-	//				}
-	//			}
-	//		}
-	//	}
-	//
-	//	private static double nanosToSeconds(long nanos) {
-	//		return nanos / 1E9;
-	//	}
-	//
-	//	private static long secondsToMillis(double seconds) {
-	//		return (long) (seconds * 1E3);
-	//	}
-
-	//for (int y = 0; y < canvas.getHeight(); y++) {
-	//		for (int x = 0; x < canvas.getWidth(); x++) {
-	//			double num = fluid.dens[fluid.index(x / CELL_LENGTH, y / CELL_LENGTH)];
-	//			int color = (byte) (num > 255 ? 255 : num) & 0xFF;
-	//			writer.setColor(x, y, Color.grayRgb(color));
-	//		}
-	//	}
 	private void addSourcesFromUI(Fluid fluid) {
 		synchronized (fluid) {
 			mouseAdapter.consumeSources(fluidInput -> {
@@ -162,5 +144,13 @@ public class SimulationThreaded implements Runnable {
 				fluid.dens[fluid.index(fluidInput.x, fluidInput.y)] += fluidInput.density;
 			});
 		}
+	}
+
+	public void setViscosity(double viscosity) {
+		fluid.viscosity = viscosity;
+	}
+
+	public void setDiffusionRate(double diffusionRate) {
+		fluid.diffusionRate = diffusionRate;
 	}
 }

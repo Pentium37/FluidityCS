@@ -3,8 +3,8 @@ package com.fluidity.program.simulation.fluid;
 public abstract class Fluid {
 	public int WIDTH;
 	public int HEIGHT;
-	private int CELL_LENGTH;
-	private int size;
+	private final int CELL_LENGTH;
+	private final int size;
 	private final int ITERATIONS;
 	public double[] dens, u, v; // change to horizontal, vertical and density
 	public double diffusionRate, viscosity;
@@ -126,8 +126,8 @@ public abstract class Fluid {
 
 	public void gaussSeidel(int b, double[] destination, double[] source, double a, double factor) {
 		for (int k = 0; k < ITERATIONS; k++) {
-			for (int i = 1; i < HEIGHT + 1; i++) {
-				for (int j = 1; j < WIDTH + 1; j++) {
+			for (int i = 1; i < WIDTH + 1; i++) {
+				for (int j = 1; j < HEIGHT + 1; j++) {
 					destination[index(i, j)] =
 							(source[index(i, j)] + a * (destination[index(i - 1, j)] + destination[index(i + 1, j)]
 									+ destination[index(i, j - 1)] + destination[index(i, j + 1)])) / (factor);

@@ -2,7 +2,7 @@ package com.fluidity.program.ui.controllers;
 
 import com.fluidity.program.simulation.FluidInput;
 import com.fluidity.program.simulation.SimulationThreaded;
-import com.fluidity.program.ui.MouseAdapter;
+import com.fluidity.program.ui.MouseListener;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.input.MouseEvent;
@@ -20,7 +20,7 @@ import java.util.function.Consumer;
 
 import static java.lang.Math.hypot;
 
-public class TestSimulationController extends Controller implements MouseAdapter {
+public class TestSimulationController extends Controller implements MouseListener {
 	@FXML
 	Canvas canvas;
 	@FXML
@@ -29,8 +29,6 @@ public class TestSimulationController extends Controller implements MouseAdapter
 	private List<FluidInput> sourceQueue;
 	private Instant startAdd;
 	private int[] previousCoords;
-	private int IMAGE_WIDTH;
-	private int IMAGE_HEIGHT;
 	private int CELL_LENGTH;
 
 	private static final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor(r -> {
@@ -44,10 +42,12 @@ public class TestSimulationController extends Controller implements MouseAdapter
 		sourceQueue = new ArrayList<>();
 		startAdd = Instant.now();
 
-		IMAGE_WIDTH = 200;
-		IMAGE_HEIGHT = 200;
-		CELL_LENGTH = 1;
+		int IMAGE_WIDTH = 720;
+		int IMAGE_HEIGHT = 480;
+		CELL_LENGTH = 5;
 
+
+		this.simulationPane.setPrefSize(IMAGE_WIDTH, IMAGE_HEIGHT);
 		this.canvas.setHeight(IMAGE_HEIGHT);
 		this.canvas.setWidth(IMAGE_WIDTH);
 		EXECUTOR.submit(new SimulationThreaded(canvas, this, IMAGE_WIDTH, IMAGE_HEIGHT, CELL_LENGTH));
