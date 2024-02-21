@@ -2,7 +2,6 @@ package com.fluidity.program.ui.controllers;
 
 import com.fluidity.program.simulation.FluidInput;
 import com.fluidity.program.simulation.SimulationThreaded;
-import com.fluidity.program.simulation.fluid.Fluid;
 import com.fluidity.program.ui.MouseListener;
 import com.fluidity.program.ui.ProgramState;
 import com.fluidity.program.utilities.ExtraMath;
@@ -35,15 +34,15 @@ public class SimulationController extends Controller implements MouseListener {
 	@FXML
 	private Label viscosityLabel;
 	@FXML
-	private Slider flowspeedSlider;
+	private Slider diffusionRateSlider;
 	@FXML
-	private Label flowspeedLabel;
+	private Label diffusionRateLabel;
 	@FXML
 	private Button startSimulationButton;
 	@FXML
 	private ChoiceBox<String> plotChoice;
 	private double viscosity;
-	private double flowspeed;
+	private double diffusionRate;
 
 	@FXML
 	Canvas canvasX;
@@ -64,7 +63,7 @@ public class SimulationController extends Controller implements MouseListener {
 	@Override
 	public void initialize(final URL url, final ResourceBundle resourceBundle) {
 		this.viscosity = 0;
-		this.flowspeed = 0;
+		this.diffusionRate = 0;
 
 		createListeners();
 		sourceQueue = new ArrayList<>();
@@ -150,14 +149,15 @@ public class SimulationController extends Controller implements MouseListener {
 	@FXML
 	private void onStartSimulationClick() {
 		if (!simulationStarted) {
-			viscositySlider = new Slider();
-			flowspeedSlider = new Slider();
+			viscositySlider.setDisable(true);
+			diffusionRateSlider.setDisable(true);
 			EXECUTOR.submit(simulation);
 			startSimulationButton.setText("Pause Simulation");
 			simulationStarted = true;
 		} else {
-			Fluid fluid = simulation.getFluid();
-			EXECUTOR.shutdown();
+			viscositySlider.setDisable(false);
+			diffusionRateSlider.setDisable(false);
+			simulation.running = false;
 			createListeners();
 			startSimulationButton.setText("Start Simulation");
 		}
@@ -170,11 +170,11 @@ public class SimulationController extends Controller implements MouseListener {
 					viscosityLabel.setText("Viscosity: " + viscosity);
 					simulation.setViscosity(viscosity);
 				});
-		flowspeedSlider.valueProperty()
+		diffusionRateSlider.valueProperty()
 				.addListener((obs, oldVal, newVal) -> {
-					flowspeed = ExtraMath.roundToTwoDecimalPlaces(flowspeedSlider.getValue());
-					flowspeedLabel.setText("Flow Speed: " + flowspeed);
-					simulation.setDiffusionRate(flowspeed);
+					diffusionRate = ExtraMath.roundToTwoDecimalPlaces(diffusionRateSlider.getValue());
+					diffusionRateLabel.setText("Flow Speed: " + diffusionRate);
+					simulation.setDiffusionRate(diffusionRate);
 				});
 	}
 }

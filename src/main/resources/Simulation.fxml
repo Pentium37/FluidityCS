@@ -35,8 +35,8 @@
                                     </VBox.margin>
                                 </Label>
                                 <Slider fx:id="viscositySlider" blockIncrement="0.25" max="30.0" prefHeight="0.0" prefWidth="85.0" showTickLabels="true" showTickMarks="true" styleClass="small-text" />
-                                <Label fx:id="flowspeedLabel" layoutX="107.0" layoutY="21.0" styleClass="small-text" text="Flow Speed:" />
-                                <Slider fx:id="flowspeedSlider" blockIncrement="0.25" layoutX="11.0" layoutY="38.0" max="30.0" prefHeight="0.0" prefWidth="85.0" showTickLabels="true" showTickMarks="true" styleClass="small-text" />
+                                <Label fx:id="diffusionRateLabel" layoutX="107.0" layoutY="21.0" styleClass="small-text" text="Diffusion Rate:" />
+                                <Slider fx:id="diffusionRateSlider" blockIncrement="0.25" layoutX="11.0" layoutY="38.0" max="30.0" prefHeight="0.0" prefWidth="85.0" showTickLabels="true" showTickMarks="true" styleClass="small-text" />
                                 <HBox alignment="TOP_CENTER" prefHeight="28.0" prefWidth="238.0" spacing="10.0" styleClass="small-text">
                                     <children>
                                         <ChoiceBox fx:id="plotChoice" prefWidth="110.0" />

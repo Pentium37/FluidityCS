@@ -16,7 +16,7 @@ public class SimulationThreaded implements Runnable {
 	private int FLUID_WIDTH;
 	private int FLUID_HEIGHT;
 	private Fluid fluid;
-	//	public static final double FPS = 10, TPS = 10;
+	public boolean running;
 
 	public SimulationThreaded(Canvas canvas, MouseListener mouseAdapter, int IMAGE_WIDTH, int IMAGE_HEIGHT,
 			int CELL_LENGTH) {
@@ -25,32 +25,32 @@ public class SimulationThreaded implements Runnable {
 		this.CELL_LENGTH = CELL_LENGTH;
 		this.IMAGE_WIDTH = IMAGE_WIDTH;
 		this.IMAGE_HEIGHT = IMAGE_HEIGHT;
-		this.fluid = new BoxFluid(IMAGE_WIDTH / CELL_LENGTH, IMAGE_HEIGHT / CELL_LENGTH, CELL_LENGTH, 1, 1, 4);
+		this.fluid = new BoxFluid(IMAGE_WIDTH / CELL_LENGTH, IMAGE_HEIGHT / CELL_LENGTH, CELL_LENGTH, 0, 0, 4);
+		this.running = true;
 	}
 
-//	@Override
-//	public void run() {
-//		Fluid fluid = new BoxFluid(IMAGE_WIDTH / CELL_LENGTH, IMAGE_HEIGHT / CELL_LENGTH, CELL_LENGTH, 2, 2, 4);
-//		this.FLUID_WIDTH = fluid.WIDTH;
-//		this.FLUID_HEIGHT = fluid.HEIGHT;
-//
-//		long current = System.nanoTime();
-//		while (true) {
-//			long l = System.nanoTime();
-//			double deltaMillis = (l - current) / 1_000_000_000.0;
-//
-//			fluid.step(deltaMillis);
-//			addSourcesFromUI(fluid);
-//
-//			render(fluid.dens.clone()); //run later
-//
-//			current = l;
-//		}
-//	}
+	//	@Override
+	//	public void run() {
+	//		Fluid fluid = new BoxFluid(IMAGE_WIDTH / CELL_LENGTH, IMAGE_HEIGHT / CELL_LENGTH, CELL_LENGTH, 2, 2, 4);
+	//		this.FLUID_WIDTH = fluid.WIDTH;
+	//		this.FLUID_HEIGHT = fluid.HEIGHT;
+	//
+	//		long current = System.nanoTime();
+	//		while (true) {
+	//			long l = System.nanoTime();
+	//			double deltaMillis = (l - current) / 1_000_000_000.0;
+	//
+	//			fluid.step(deltaMillis);
+	//			addSourcesFromUI(fluid);
+	//
+	//			render(fluid.dens.clone()); //run later
+	//
+	//			current = l;
+	//		}
+	//	}
 
 	@Override
 	public void run() {
-
 		this.FLUID_WIDTH = fluid.WIDTH;
 		this.FLUID_HEIGHT = fluid.HEIGHT;
 
@@ -62,7 +62,7 @@ public class SimulationThreaded implements Runnable {
 		double unprocessedTime = 0;
 		double frameTime = 0;
 
-		while (true) {
+		while (running) {
 			long now = System.nanoTime();
 			long passedTime = now - lastTime;
 			lastTime = now;
@@ -100,16 +100,16 @@ public class SimulationThreaded implements Runnable {
 
 		for (int y = 0; y < IMAGE_HEIGHT; y++) {
 			for (int x = 0; x < IMAGE_WIDTH; x++) {
-				double num = dens[index(x/CELL_LENGTH, y/CELL_LENGTH)];
+				double num = dens[index(x / CELL_LENGTH, y / CELL_LENGTH)];
 				int color = (int) (num > 255 ? 255 : num);
 				int rgb = (255 << 24) | (color << 16) | (color << 8) | color; // Set alpha channel to fully opaque
 				buffer[x + y * IMAGE_WIDTH] = rgb;
 			}
 		}
 
-		PixelWriter writer = canvas.getGraphicsContext2D().getPixelWriter();
-		writer.setPixels(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT,
-				PixelFormat.getIntArgbInstance(), buffer, 0, IMAGE_WIDTH);
+		PixelWriter writer = canvas.getGraphicsContext2D()
+				.getPixelWriter();
+		writer.setPixels(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT, PixelFormat.getIntArgbInstance(), buffer, 0, IMAGE_WIDTH);
 	}
 
 	public int index(int i, int j) {

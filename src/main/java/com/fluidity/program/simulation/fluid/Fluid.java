@@ -9,6 +9,7 @@ public abstract class Fluid {
 	public double[] dens, u, v; // change to horizontal, vertical and density
 	public double diffusionRate, viscosity;
 	private double dt; // change to delta time
+	public int deltaTimeFactor;
 
 	protected Fluid(int WIDTH, int HEIGHT, int CELL_LENGTH, double viscosity, double diffusionRate, int ITERATIONS) {
 		this.WIDTH = WIDTH;
@@ -24,6 +25,8 @@ public abstract class Fluid {
 		u = new double[size];
 		v = new double[size];
 
+		this.deltaTimeFactor = 1;
+
 		for (int i = 0; i < WIDTH + 1; i++) {
 			for (int j = 0; j < HEIGHT + 1; j++) {
 				dens[index(i, j)] = 0;
@@ -34,7 +37,7 @@ public abstract class Fluid {
 	}
 
 	public void step(double deltaTime) {
-		this.dt = deltaTime;
+		this.dt = deltaTime*deltaTimeFactor;
 		double[] u_prev = new double[size];
 		double[] v_prev = new double[size];
 		double[] dens_prev = new double[size];
@@ -154,4 +157,5 @@ public abstract class Fluid {
 	}
 
 	abstract void setBoundary(int b, double[] destination);
+	abstract void setBarriers();
 }
