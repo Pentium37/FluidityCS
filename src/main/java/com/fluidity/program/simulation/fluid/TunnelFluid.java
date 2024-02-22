@@ -1,6 +1,6 @@
 package com.fluidity.program.simulation.fluid;
 
-public class TunnelFluid extends Fluid{
+public class TunnelFluid extends Fluid {
 	public TunnelFluid(final int WIDTH, final int HEIGHT, final int CELL_LENGTH, final double viscosity,
 			final double diffusionRate, final int ITERATIONS) {
 		super(WIDTH, HEIGHT, CELL_LENGTH, viscosity, diffusionRate, ITERATIONS);
@@ -24,10 +24,13 @@ public class TunnelFluid extends Fluid{
 	@Override
 	void conditions() {
 		for (int i = 0; i < HEIGHT + 1; i++) {
-			u[index(0, i)] =1;
+			u[index(0, i)] = 5;
 		}
-		for (int i = 0; i < 10; i++) {
-			dens[index(1, 32+i)] += 5;
+
+		// inflow density
+		dens[index(1, this.HEIGHT / 2)] += 20;
+		for (int i = 1; i < 5; i++) {
+			dens[index(1, this.HEIGHT / 2 - i)] += 20;
 		}
 	}
 

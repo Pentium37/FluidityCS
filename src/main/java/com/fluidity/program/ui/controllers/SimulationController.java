@@ -24,10 +24,7 @@ import static java.lang.Math.hypot;
 
 public class SimulationController extends Controller implements MouseListener {
 	@FXML
-	private CheckBox flowlinesCheckBox;
-	@FXML
 	private CheckBox sensorCheckbox;
-	private boolean flowlinesOn;
 	private boolean sensorOn;
 	@FXML
 	private Slider viscositySlider;
@@ -40,10 +37,13 @@ public class SimulationController extends Controller implements MouseListener {
 	@FXML
 	private Button startSimulationButton;
 	@FXML
+	private ChoiceBox<String> containerType;
+	@FXML
 	private ChoiceBox<String> plotChoice;
-	private double viscosity;
-	private double diffusionRate;
-
+	@FXML
+	private ChoiceBox<String> mouseAction;
+	private double viscosity, diffusionRate;
+	private boolean dragFluid, addBarrier, removeBarrier;
 	@FXML
 	Canvas canvasX;
 	private boolean mouseHeld;
@@ -64,8 +64,6 @@ public class SimulationController extends Controller implements MouseListener {
 	public void initialize(final URL url, final ResourceBundle resourceBundle) {
 		this.viscosity = 0;
 		this.diffusionRate = 0;
-
-		createListeners();
 		sourceQueue = new ArrayList<>();
 		startAdd = Instant.now();
 
@@ -73,40 +71,49 @@ public class SimulationController extends Controller implements MouseListener {
 		int IMAGE_HEIGHT = 480;
 		CELL_LENGTH = 5;
 
+		viscositySlider.setDisable(true);
+		diffusionRateSlider.setDisable(true);
 		simulation = new SimulationThreaded(canvasX, this, IMAGE_WIDTH, IMAGE_HEIGHT, CELL_LENGTH);
+		createListeners();
 		simulationStarted = false;
 	}
 
 	@Override
 	@FXML
 	public void mousePressed(MouseEvent e) {
-		previousCoords = new int[] { (int) e.getX(), (int) e.getY() };
-		mouseHeld = true;
-		startAdd = Instant.now();
+		if (dragFluid) {
+			previousCoords = new int[] { (int) e.getX(), (int) e.getY() };
+			mouseHeld = true;
+			startAdd = Instant.now();
+		}
 	}
 
 	@Override
 	@FXML
 	public void mouseReleased() {
-		mouseHeld = false;
+		if (dragFluid) {
+			mouseHeld = false;
+		}
 	}
 
 	@Override
 	@FXML
 	public synchronized void mouseDragged(MouseEvent e) {
-		double velocityX = 0;
-		double velocityY = 0;
-		double dragScalar = 5.0;
+		if (dragFluid) {
+			double velocityX = 0;
+			double velocityY = 0;
+			double dragScalar = 5.0;
 
-		if (previousCoords != null) {
-			velocityX = dragScalar * ((int) e.getX() - previousCoords[0]);
-			velocityY = dragScalar * ((int) e.getY() - previousCoords[1]);
+			if (previousCoords != null) {
+				velocityX = dragScalar * ((int) e.getX() - previousCoords[0]);
+				velocityY = dragScalar * ((int) e.getY() - previousCoords[1]);
+			}
+
+			startAdd = Instant.now();
+			previousCoords = new int[] { (int) e.getX(), (int) e.getY() };
+			sourceQueue.add(new FluidInput(previousCoords[0], previousCoords[1], velocityX, velocityY,
+					6.0 * hypot(velocityX, velocityY), CELL_LENGTH));
 		}
-
-		startAdd = Instant.now();
-		previousCoords = new int[] { (int) e.getX(), (int) e.getY() };
-		sourceQueue.add(new FluidInput(previousCoords[0], previousCoords[1], velocityX, velocityY,
-				6.0 * hypot(velocityX, velocityY), CELL_LENGTH));
 	}
 
 	@Override
@@ -126,11 +133,6 @@ public class SimulationController extends Controller implements MouseListener {
 	}
 
 	@FXML
-	public void onFlowLinesCheckBoxClick() {
-		flowlinesOn = flowlinesCheckBox.isSelected();
-	}
-
-	@FXML
 	public void onSensorCheckBoxClick() {
 		sensorOn = sensorCheckbox.isSelected();
 	}
@@ -138,28 +140,22 @@ public class SimulationController extends Controller implements MouseListener {
 	// slap in some text boxes for the number quantities
 	@FXML
 	public void onReturnToHomeButtonClick() {
+		endSimulation();
 		manager.loadScene(ProgramState.MAIN_MENU);
 	}
 
 	@FXML
 	private void onGoToSettingsClick() {
+		endSimulation();
 		manager.loadScene(ProgramState.SETTINGS);
 	}
 
 	@FXML
 	private void onStartSimulationClick() {
 		if (!simulationStarted) {
-			viscositySlider.setDisable(true);
-			diffusionRateSlider.setDisable(true);
-			EXECUTOR.submit(simulation);
-			startSimulationButton.setText("Pause Simulation");
-			simulationStarted = true;
+			startSimulation();
 		} else {
-			viscositySlider.setDisable(false);
-			diffusionRateSlider.setDisable(false);
-			simulation.running = false;
-			createListeners();
-			startSimulationButton.setText("Start Simulation");
+			endSimulation();
 		}
 	}
 
@@ -176,5 +172,108 @@ public class SimulationController extends Controller implements MouseListener {
 					diffusionRateLabel.setText("Flow Speed: " + diffusionRate);
 					simulation.setDiffusionRate(diffusionRate);
 				});
+
+		containerType.getSelectionModel()
+				.selectedIndexProperty()
+				.addListener((observable, oldValue, newValue) -> {
+					// Get the selected index
+					int selectedIndex = newValue.intValue();
+
+					// Get the selected item based on the index
+					String selectedContainerType = containerType.getItems()
+							.get(selectedIndex);
+
+					// Check the selected item and perform actions accordingly
+					switch (selectedContainerType) {
+						case "Box" -> {
+							// Handle selection of "Box"
+							viscositySlider.setValue(0);
+							diffusionRateSlider.setValue(0);
+							if (!simulation.running) {
+								viscositySlider.setDisable(false);
+								diffusionRateSlider.setDisable(false);
+							}
+							simulation.setBoxBoundaries();
+						}
+						case "Tunnel" -> {
+							// Handle selection of "Tunnel"
+							viscositySlider.setValue(0);
+							diffusionRateSlider.setValue(0);
+							if (!simulation.running) {
+								viscositySlider.setDisable(false);
+								diffusionRateSlider.setDisable(false);
+							}
+							simulation.setTunnelBoundaries();
+						}
+					}
+				});
+
+		plotChoice.getSelectionModel()
+				.selectedIndexProperty()
+				.addListener((observable, oldValue, newValue) -> {
+					// Get the selected index
+					int selectedIndex = newValue.intValue();
+
+					// Get the selected item based on the index
+					String selectedContainerType = plotChoice.getItems()
+							.get(selectedIndex);
+
+					// Check the selected item and perform actions accordingly
+					switch (selectedContainerType) {
+						case "Density", "x-Velocity", "y-Velocity" -> simulation.setPlotType(selectedContainerType);
+					}
+				});
+
+		mouseAction.getSelectionModel()
+				.selectedIndexProperty()
+				.addListener((observable, oldValue, newValue) -> {
+							// Get the selected index
+							int selectedIndex = newValue.intValue();
+
+							// Get the selected item based on the index
+							String selectedContainerType = mouseAction.getItems()
+									.get(selectedIndex);
+
+							// Check the selected item and perform actions accordingly
+							switch (selectedContainerType) {
+								case "Drag Fluid" -> {
+									dragFluid = true;
+									addBarrier = false;
+									removeBarrier = false;
+								}
+
+								case "Add Barrier" -> {
+									dragFluid = false;
+									addBarrier = true;
+									removeBarrier = false;
+								}
+
+								case "Remove Barrier" -> {
+									dragFluid = false;
+									addBarrier = false;
+									removeBarrier = true;
+								}
+							}
+						}
+
+				);
+		mouseAction.getSelectionModel().select(0);
 	}
+
+	private void startSimulation() {
+		viscositySlider.setDisable(true);
+		diffusionRateSlider.setDisable(true);
+		EXECUTOR.submit(simulation);
+		startSimulationButton.setText("Pause Simulation");
+		simulationStarted = true;
+	}
+
+	private void endSimulation() {
+		viscositySlider.setDisable(false);
+		diffusionRateSlider.setDisable(false);
+		simulation.running = false;
+		createListeners();
+		startSimulationButton.setText("Start Simulation");
+	}
+
 }

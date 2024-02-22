@@ -17,7 +17,8 @@ public class SimulationThreaded implements Runnable {
 	private int FLUID_WIDTH;
 	private int FLUID_HEIGHT;
 	private Fluid fluid;
-	public boolean running;
+	public boolean running, densityPlot, xVelocityPlot, yVelocityPlot;
+	private int plotFactor;
 
 	public SimulationThreaded(Canvas canvas, MouseListener mouseAdapter, int IMAGE_WIDTH, int IMAGE_HEIGHT,
 			int CELL_LENGTH) {
@@ -26,8 +27,7 @@ public class SimulationThreaded implements Runnable {
 		this.CELL_LENGTH = CELL_LENGTH;
 		this.IMAGE_WIDTH = IMAGE_WIDTH;
 		this.IMAGE_HEIGHT = IMAGE_HEIGHT;
-		this.fluid = new TunnelFluid(IMAGE_WIDTH / CELL_LENGTH, IMAGE_HEIGHT / CELL_LENGTH, CELL_LENGTH, 0, 0, 4);
-		this.running = true;
+		this.running = false;
 	}
 
 	//	@Override
@@ -52,6 +52,7 @@ public class SimulationThreaded implements Runnable {
 
 	@Override
 	public void run() {
+		this.running = true;
 		this.FLUID_WIDTH = fluid.WIDTH;
 		this.FLUID_HEIGHT = fluid.HEIGHT;
 
@@ -72,15 +73,20 @@ public class SimulationThreaded implements Runnable {
 
 			// Update fluid and handle inputs as many times as needed to catch up with the target TPS
 			while (unprocessedTime > TIME_PER_TICK) {
-				double deltaTime = TIME_PER_TICK; // Delta time is constant for each tick
-				fluid.step(deltaTime);
+				fluid.step(TIME_PER_TICK);
 				addSourcesFromUI(fluid);
 				unprocessedTime -= TIME_PER_TICK;
 			}
 
 			// Render if it's time for a new frame
 			if (frameTime >= TIME_PER_FRAME) {
-				render(fluid.dens.clone()); // Render with the most recent fluid density
+				if (densityPlot) {
+					render(fluid.dens.clone()); // Render with the most recent fluid density
+				} else if (xVelocityPlot) {
+					render(fluid.u.clone()); // Render with the most recent fluid density
+				} else if (yVelocityPlot) {
+					render(fluid.v.clone()); // Render with the most recent fluid density
+				}
 				frameTime = 0;
 			}
 
@@ -96,12 +102,12 @@ public class SimulationThreaded implements Runnable {
 		}
 	}
 
-	public void render(double[] dens) {
+	public void render(double[] plotChoice) {
 		int[] buffer = new int[IMAGE_WIDTH * IMAGE_HEIGHT];
 
 		for (int y = 0; y < IMAGE_HEIGHT; y++) {
 			for (int x = 0; x < IMAGE_WIDTH; x++) {
-				double num = dens[index(x / CELL_LENGTH, y / CELL_LENGTH)];
+				double num = Math.abs(plotChoice[index(x / CELL_LENGTH, y / CELL_LENGTH)] * this.plotFactor);
 				int color = (int) (num > 255 ? 255 : num);
 				int rgb = (255 << 24) | (color << 16) | (color << 8) | color; // Set alpha channel to fully opaque
 				buffer[x + y * IMAGE_WIDTH] = rgb;
@@ -157,5 +163,29 @@ public class SimulationThreaded implements Runnable {
 
 	public Fluid getFluid() {
 		return this.fluid;
+	}
+
+	public void setTunnelBoundaries() {
+		this.fluid = new TunnelFluid(IMAGE_WIDTH / CELL_LENGTH, IMAGE_HEIGHT / CELL_LENGTH, CELL_LENGTH, 0, 0, 4);
+	}
+
+	public void setBoxBoundaries() {
+		this.fluid = new BoxFluid(IMAGE_WIDTH / CELL_LENGTH, IMAGE_HEIGHT / CELL_LENGTH, CELL_LENGTH, 0, 0, 4);
+	}
+
+	public void setPlotType(String plotType) {
+		densityPlot = false;
+		xVelocityPlot = false;
+		yVelocityPlot = false;
+		if (plotType.equals("Density")) {
+			plotFactor = 1;
+			densityPlot = true;
+		} else if (plotType.equals("x-Velocity")) {
+			plotFactor = 100;
+			xVelocityPlot = true;
+		} else if (plotType.equals("y-Velocity")) {
+			plotFactor = 100;
+			yVelocityPlot = true;
+		}
 	}
 }
