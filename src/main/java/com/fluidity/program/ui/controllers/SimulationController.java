@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.function.Consumer;
 
 import static java.lang.Math.hypot;
@@ -53,6 +54,7 @@ public class SimulationController extends Controller implements MouseListener {
 	private int CELL_LENGTH;
 	private SimulationThreaded simulation;
 	private boolean simulationStarted;
+	private Future<?> simulationFuture;
 
 	private static final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor(r -> {
 		Thread thread = new Thread(r);
@@ -263,7 +265,7 @@ public class SimulationController extends Controller implements MouseListener {
 	private void startSimulation() {
 		viscositySlider.setDisable(true);
 		diffusionRateSlider.setDisable(true);
-		EXECUTOR.submit(simulation);
+		simulationFuture = EXECUTOR.submit(simulation);
 		startSimulationButton.setText("Pause Simulation");
 		simulationStarted = true;
 	}
@@ -271,7 +273,7 @@ public class SimulationController extends Controller implements MouseListener {
 	private void endSimulation() {
 		viscositySlider.setDisable(false);
 		diffusionRateSlider.setDisable(false);
-		simulation.running = false;
+		simulationFuture.cancel(true);
 		createListeners();
 		startSimulationButton.setText("Start Simulation");
 	}
