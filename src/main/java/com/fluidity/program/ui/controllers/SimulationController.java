@@ -168,6 +168,7 @@ public class SimulationController extends Controller implements MouseListener {
 					viscosityLabel.setText("Viscosity: " + viscosity);
 					simulation.setViscosity(viscosity);
 				});
+
 		diffusionRateSlider.valueProperty()
 				.addListener((obs, oldVal, newVal) -> {
 					diffusionRate = ExtraMath.roundToTwoDecimalPlaces(diffusionRateSlider.getValue());
@@ -273,6 +274,7 @@ public class SimulationController extends Controller implements MouseListener {
 	private void endSimulation() {
 		viscositySlider.setDisable(false);
 		diffusionRateSlider.setDisable(false);
+		simulationStarted=false;
 		simulationFuture.cancel(true);
 		createListeners();
 		startSimulationButton.setText("Start Simulation");

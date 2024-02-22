@@ -97,6 +97,7 @@ public class SimulationThreaded implements Runnable {
 					Thread.sleep(sleepTime / 1_000_000, (int) (sleepTime % 1_000_000));
 				} catch (InterruptedException e) {
 					e.printStackTrace();
+					break;
 				}
 			}
 		}
