@@ -28,7 +28,12 @@ public class BoxFluid extends Fluid{
 	}
 
 	@Override
-	void setBarriers() {
+	void conditions() {
+
+	}
+
+	@Override
+	void setBarriers(final int b, final double[] destination) {
 
 	}
 }

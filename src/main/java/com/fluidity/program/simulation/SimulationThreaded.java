@@ -2,6 +2,7 @@ package com.fluidity.program.simulation;
 
 import com.fluidity.program.simulation.fluid.BoxFluid;
 import com.fluidity.program.simulation.fluid.Fluid;
+import com.fluidity.program.simulation.fluid.TunnelFluid;
 import com.fluidity.program.ui.MouseListener;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.image.PixelFormat;
@@ -25,7 +26,7 @@ public class SimulationThreaded implements Runnable {
 		this.CELL_LENGTH = CELL_LENGTH;
 		this.IMAGE_WIDTH = IMAGE_WIDTH;
 		this.IMAGE_HEIGHT = IMAGE_HEIGHT;
-		this.fluid = new BoxFluid(IMAGE_WIDTH / CELL_LENGTH, IMAGE_HEIGHT / CELL_LENGTH, CELL_LENGTH, 0, 0, 4);
+		this.fluid = new TunnelFluid(IMAGE_WIDTH / CELL_LENGTH, IMAGE_HEIGHT / CELL_LENGTH, CELL_LENGTH, 0, 0, 4);
 		this.running = true;
 	}
 

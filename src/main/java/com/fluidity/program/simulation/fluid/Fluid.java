@@ -37,6 +37,7 @@ public abstract class Fluid {
 	}
 
 	public void step(double deltaTime) {
+		conditions();
 		this.dt = deltaTime*deltaTimeFactor;
 		double[] u_prev = new double[size];
 		double[] v_prev = new double[size];
@@ -103,7 +104,7 @@ public abstract class Fluid {
 	public void project(double[] u, double[] v) {
 		double[] pressure = new double[size];
 		double[] divergenceField = new double[size];
-		double h = CELL_LENGTH; //CELL LENGTH;
+		double h = CELL_LENGTH;
 
 		for (int i = 1; i < WIDTH + 1; i++) {
 			for (int j = 1; j < HEIGHT + 1; j++) {
@@ -157,5 +158,6 @@ public abstract class Fluid {
 	}
 
 	abstract void setBoundary(int b, double[] destination);
-	abstract void setBarriers();
+	abstract  void conditions();
+	abstract void setBarriers(final int b, final double[] destination);
 }
