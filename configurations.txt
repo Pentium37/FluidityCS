@@ -3,6 +3,6 @@ primary-step-forward:Space
 secondary-pause:S
 secondary-step-forward:Left
 saving:false
-FPS:75
+FPS:60
 iterations:4
-cell-size:1,1
+cell-size:5,5

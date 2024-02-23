@@ -1,6 +1,9 @@
 package com.fluidity.program.simulation.fluid;
 
-public class BoxFluid extends Fluid{
+import java.util.List;
+
+public class BoxFluid extends Fluid {
+
 
 	public BoxFluid(final int WIDTH, final int HEIGHT, final int CELL_LENGTH, final double viscosity,
 			final double diffusionRate, final int ITERATIONS) {
@@ -13,7 +16,8 @@ public class BoxFluid extends Fluid{
 		for (int i = 1; i < WIDTH + 1; i++) {
 			if (i <= HEIGHT) {
 				destination[index(0, i)] = (b == 1) ? -destination[index(1, i)] : destination[index(1, i)];
-				destination[index(WIDTH + 1, i)] = (b == 1) ? -destination[index(WIDTH, i)] : destination[index(WIDTH, i)];
+				destination[index(WIDTH + 1, i)] =
+						(b == 1) ? -destination[index(WIDTH, i)] : destination[index(WIDTH, i)];
 			}
 			destination[index(i, 0)] = (b == 2) ? -destination[index(i, 1)] : destination[index(i, 1)];
 			destination[index(i, HEIGHT + 1)] =

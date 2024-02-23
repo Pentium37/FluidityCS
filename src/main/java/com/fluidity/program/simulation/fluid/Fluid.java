@@ -1,5 +1,7 @@
 package com.fluidity.program.simulation.fluid;
 
+import java.util.List;
+
 public abstract class Fluid {
 	public int WIDTH;
 	public int HEIGHT;
@@ -10,6 +12,7 @@ public abstract class Fluid {
 	public double diffusionRate, viscosity;
 	private double dt; // change to delta time
 	public int deltaTimeFactor;
+	List<int[]> barrierCoords;
 
 	protected Fluid(int WIDTH, int HEIGHT, int CELL_LENGTH, double viscosity, double diffusionRate, int ITERATIONS) {
 		this.WIDTH = WIDTH;

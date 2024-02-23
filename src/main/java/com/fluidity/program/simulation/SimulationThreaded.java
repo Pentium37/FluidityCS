@@ -13,42 +13,24 @@ public class SimulationThreaded implements Runnable {
 	private final MouseListener mouseAdapter;
 	private final int IMAGE_WIDTH;
 	private final int IMAGE_HEIGHT;
-	private final int CELL_LENGTH;
+
 	private int FLUID_WIDTH;
 	private int FLUID_HEIGHT;
 	private Fluid fluid;
-	public boolean running, densityPlot, xVelocityPlot, yVelocityPlot;
+	public boolean running, densityPlot, xVelocityPlot, yVelocityPlot, initialised;
 	private int plotFactor;
-
-	public SimulationThreaded(Canvas canvas, MouseListener mouseAdapter, int IMAGE_WIDTH, int IMAGE_HEIGHT,
-			int CELL_LENGTH) {
+	private int CELL_LENGTH;
+	private int ITERATIONS;
+	private double DESIRED_FPS;
+	private double TPS;
+	public SimulationThreaded(Canvas canvas, MouseListener mouseAdapter, int IMAGE_WIDTH, int IMAGE_HEIGHT) {
 		this.canvas = canvas;
 		this.mouseAdapter = mouseAdapter;
-		this.CELL_LENGTH = CELL_LENGTH;
 		this.IMAGE_WIDTH = IMAGE_WIDTH;
 		this.IMAGE_HEIGHT = IMAGE_HEIGHT;
 		this.running = false;
+		this.initialised = false;
 	}
-
-	//	@Override
-	//	public void run() {
-	//		Fluid fluid = new BoxFluid(IMAGE_WIDTH / CELL_LENGTH, IMAGE_HEIGHT / CELL_LENGTH, CELL_LENGTH, 2, 2, 4);
-	//		this.FLUID_WIDTH = fluid.WIDTH;
-	//		this.FLUID_HEIGHT = fluid.HEIGHT;
-	//
-	//		long current = System.nanoTime();
-	//		while (true) {
-	//			long l = System.nanoTime();
-	//			double deltaMillis = (l - current) / 1_000_000_000.0;
-	//
-	//			fluid.step(deltaMillis);
-	//			addSourcesFromUI(fluid);
-	//
-	//			render(fluid.dens.clone()); //run later
-	//
-	//			current = l;
-	//		}
-	//	}
 
 	@Override
 	public void run() {
@@ -56,9 +38,7 @@ public class SimulationThreaded implements Runnable {
 		this.FLUID_WIDTH = fluid.WIDTH;
 		this.FLUID_HEIGHT = fluid.HEIGHT;
 
-		final double TPS = 60; // Ticks Per Second
 		final double TIME_PER_TICK = 1.0 / TPS;
-		final double DESIRED_FPS = 60; // Desired Frames Per Second
 		final double TIME_PER_FRAME = 1.0 / DESIRED_FPS;
 		long lastTime = System.nanoTime();
 		double unprocessedTime = 0;
@@ -87,6 +67,7 @@ public class SimulationThreaded implements Runnable {
 				} else if (yVelocityPlot) {
 					render(fluid.v.clone()); // Render with the most recent fluid density
 				}
+
 				frameTime = 0;
 			}
 
@@ -174,6 +155,14 @@ public class SimulationThreaded implements Runnable {
 		this.fluid = new BoxFluid(IMAGE_WIDTH / CELL_LENGTH, IMAGE_HEIGHT / CELL_LENGTH, CELL_LENGTH, 0, 0, 4);
 	}
 
+	public void setQuantities(int CELL_LENGTH, int ITERATIONS, int FPS) {
+		this.CELL_LENGTH = CELL_LENGTH;
+		this.ITERATIONS = ITERATIONS;
+		this.TPS = FPS;
+		this.DESIRED_FPS = FPS;
+		this.initialised = true;
+	}
+
 	public void setPlotType(String plotType) {
 		densityPlot = false;
 		xVelocityPlot = false;
@@ -182,7 +171,7 @@ public class SimulationThreaded implements Runnable {
 			plotFactor = 1;
 			densityPlot = true;
 		} else if (plotType.equals("x-Velocity")) {
-			plotFactor = 100;
+			plotFactor = 1000;
 			xVelocityPlot = true;
 		} else if (plotType.equals("y-Velocity")) {
 			plotFactor = 100;

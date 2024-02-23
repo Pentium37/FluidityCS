@@ -33,7 +33,7 @@ public class SettingsController extends Controller {
 	private FluidUIAction recentlyPressedAction;
 	private static final String primaryButtonColor = "#262626";
 	private static final String secondaryButtonColor = "#313131";
-	private static final String configPath = "configurations.txt";
+	public static final String configPath = "configurations.txt";
 	@FXML
 	private Button fluidSavingSetter;
 	@FXML

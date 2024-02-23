@@ -2,20 +2,21 @@ package com.fluidity.program.ui.controllers;
 
 import com.fluidity.program.simulation.FluidInput;
 import com.fluidity.program.simulation.SimulationThreaded;
+import com.fluidity.program.ui.FluidUIAction;
 import com.fluidity.program.ui.MouseListener;
 import com.fluidity.program.ui.ProgramState;
 import com.fluidity.program.utilities.ExtraMath;
+import com.fluidity.program.utilities.FileHandler;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 
 import java.net.URL;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -27,6 +28,14 @@ public class SimulationController extends Controller implements MouseListener {
 	@FXML
 	private CheckBox sensorCheckbox;
 	private boolean sensorOn;
+	@FXML
+	private CheckBox addDensityCheckbox;
+	private boolean addDensity;
+	@FXML
+	private Slider densitySlider;
+	@FXML
+	private Label densityLabel;
+	public double densityFactor;
 	@FXML
 	private Slider viscositySlider;
 	@FXML
@@ -43,18 +52,23 @@ public class SimulationController extends Controller implements MouseListener {
 	private ChoiceBox<String> plotChoice;
 	@FXML
 	private ChoiceBox<String> mouseAction;
-	private double viscosity, diffusionRate;
-	private boolean dragFluid, addBarrier, removeBarrier;
 	@FXML
 	Canvas canvasX;
 	private boolean mouseHeld;
+	// Change to Queue
 	private List<FluidInput> sourceQueue;
 	private Instant startAdd;
 	private int[] previousCoords;
-	private int CELL_LENGTH;
 	private SimulationThreaded simulation;
 	private boolean simulationStarted;
 	private Future<?> simulationFuture;
+	private Map<FluidUIAction, KeyCode> keyBindMap;
+	private double viscosity, diffusionRate;
+	private boolean dragFluid, addBarrier, removeBarrier;
+	private int CELL_LENGTH;
+	private boolean savingEnabled;
+	private int ITERATIONS;
+	private int FPS;
 
 	private static final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor(r -> {
 		Thread thread = new Thread(r);
@@ -71,13 +85,48 @@ public class SimulationController extends Controller implements MouseListener {
 
 		int IMAGE_WIDTH = 720;
 		int IMAGE_HEIGHT = 480;
-		CELL_LENGTH = 5;
+
+		keyBindMap = new EnumMap<>(FluidUIAction.class);
+		simulation = new SimulationThreaded(canvasX, this, IMAGE_WIDTH, IMAGE_HEIGHT);
 
 		viscositySlider.setDisable(true);
 		diffusionRateSlider.setDisable(true);
-		simulation = new SimulationThreaded(canvasX, this, IMAGE_WIDTH, IMAGE_HEIGHT, CELL_LENGTH);
+		densitySlider.setDisable(true);
+
 		createListeners();
 		simulationStarted = false;
+	}
+
+	private void loadConfigurations() {
+		List<String> configurations = FileHandler.readFile(SettingsController.configPath);
+		for (String line : configurations) {
+
+			String[] configuration = line.split(":", 2);
+			if (configuration[1].equals("null")) {
+				continue;
+			}
+
+			try {
+				FluidUIAction action = FluidUIAction.getByPath(configuration[0]);
+				keyBindMap.put(action, KeyCode.getKeyCode(configuration[1]));
+			} catch (IllegalArgumentException e) {
+				switch (configuration[0]) {
+					case "saving" -> {
+						savingEnabled = configuration[1].equals("true");
+					}
+					case "FPS" -> {
+						FPS = Integer.parseInt(configuration[1]);
+					}
+					case "iterations" -> {
+						ITERATIONS = Integer.parseInt(configuration[1]);
+					}
+					case "cell-size" -> {
+						String[] split = configuration[1].split(",");
+						CELL_LENGTH = Integer.parseInt(split[0]);
+					}
+				}
+			}
+		}
 	}
 
 	@Override
@@ -114,7 +163,7 @@ public class SimulationController extends Controller implements MouseListener {
 			startAdd = Instant.now();
 			previousCoords = new int[] { (int) e.getX(), (int) e.getY() };
 			sourceQueue.add(new FluidInput(previousCoords[0], previousCoords[1], velocityX, velocityY,
-					6.0 * hypot(velocityX, velocityY), CELL_LENGTH));
+					densityFactor * hypot(velocityX, velocityY), CELL_LENGTH));
 		}
 	}
 
@@ -124,7 +173,7 @@ public class SimulationController extends Controller implements MouseListener {
 			long timeHeld = Duration.between(startAdd, Instant.now())
 					.toMillis();
 			startAdd = Instant.now();
-			sourceQueue.add(new FluidInput(previousCoords[0], previousCoords[1], 0, 0, timeHeld * 20, CELL_LENGTH));
+			sourceQueue.add(new FluidInput(previousCoords[0], previousCoords[1], 0, 0, timeHeld * densityFactor * (20.0/6), CELL_LENGTH));
 		}
 
 		for (FluidInput source : sourceQueue) {
@@ -139,10 +188,21 @@ public class SimulationController extends Controller implements MouseListener {
 		sensorOn = sensorCheckbox.isSelected();
 	}
 
+	@FXML
+	public void onAddDensityCheckBoxClick() {
+		addDensity = addDensityCheckbox.isSelected();
+		if (addDensity) {
+			densitySlider.setDisable(false);
+			densityFactor = densitySlider.getValue();
+		} else {
+			densitySlider.setDisable(true);
+			densityFactor = 0;
+		}
+	}
+
 	// slap in some text boxes for the number quantities
 	@FXML
 	public void onReturnToHomeButtonClick() {
-		endSimulation();
 		manager.loadScene(ProgramState.MAIN_MENU);
 	}
 
@@ -164,6 +224,7 @@ public class SimulationController extends Controller implements MouseListener {
 	private void createListeners() {
 		viscositySlider.valueProperty()
 				.addListener((obs, oldVal, newVal) -> {
+					validateInitialisation();
 					viscosity = ExtraMath.roundToTwoDecimalPlaces(viscositySlider.getValue());
 					viscosityLabel.setText("Viscosity: " + viscosity);
 					simulation.setViscosity(viscosity);
@@ -171,14 +232,22 @@ public class SimulationController extends Controller implements MouseListener {
 
 		diffusionRateSlider.valueProperty()
 				.addListener((obs, oldVal, newVal) -> {
+					validateInitialisation();
 					diffusionRate = ExtraMath.roundToTwoDecimalPlaces(diffusionRateSlider.getValue());
 					diffusionRateLabel.setText("Flow Speed: " + diffusionRate);
 					simulation.setDiffusionRate(diffusionRate);
 				});
 
+		densitySlider.valueProperty()
+				.addListener((obs, oldVal, newVal) -> {
+					densityFactor = ExtraMath.roundToTwoDecimalPlaces(densitySlider.getValue());
+					densityLabel.setText("Density: " + densityFactor);
+				});
+
 		containerType.getSelectionModel()
 				.selectedIndexProperty()
 				.addListener((observable, oldValue, newValue) -> {
+					validateInitialisation();
 					// Get the selected index
 					int selectedIndex = newValue.intValue();
 
@@ -214,6 +283,7 @@ public class SimulationController extends Controller implements MouseListener {
 		plotChoice.getSelectionModel()
 				.selectedIndexProperty()
 				.addListener((observable, oldValue, newValue) -> {
+					validateInitialisation();
 					// Get the selected index
 					int selectedIndex = newValue.intValue();
 
@@ -230,6 +300,7 @@ public class SimulationController extends Controller implements MouseListener {
 		mouseAction.getSelectionModel()
 				.selectedIndexProperty()
 				.addListener((observable, oldValue, newValue) -> {
+							validateInitialisation();
 							// Get the selected index
 							int selectedIndex = newValue.intValue();
 
@@ -260,7 +331,15 @@ public class SimulationController extends Controller implements MouseListener {
 						}
 
 				);
-		mouseAction.getSelectionModel().select(0);
+		mouseAction.getSelectionModel()
+				.select(0);
+	}
+
+	public void validateInitialisation() {
+		if (!simulation.initialised) {
+			loadConfigurations();
+			simulation.setQuantities(CELL_LENGTH, ITERATIONS, FPS);
+		}
 	}
 
 	private void startSimulation() {
@@ -274,9 +353,8 @@ public class SimulationController extends Controller implements MouseListener {
 	private void endSimulation() {
 		viscositySlider.setDisable(false);
 		diffusionRateSlider.setDisable(false);
-		simulationStarted=false;
+		simulationStarted = false;
 		simulationFuture.cancel(true);
-		createListeners();
 		startSimulationButton.setText("Start Simulation");
 	}
 

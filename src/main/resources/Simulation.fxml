@@ -1,141 +1,121 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
 <?import java.net.*?>
+<?import javafx.collections.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.canvas.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<?import javafx.collections.FXCollections?>
-<?import java.lang.String?>
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0"
-            prefWidth="1280.0" styleClass="main-theme" xmlns="http://javafx.com/javafx/17.0.2-ea"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.fluidity.program.ui.controllers.SimulationController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" styleClass="main-theme" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.fluidity.program.ui.controllers.SimulationController">
     <stylesheets>
-        <URL value="@styles.css"/>
+        <URL value="@styles.css" />
     </stylesheets>
 
     <children>
-        <HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0"
-              prefWidth="1280.0" styleClass="container">
+        <HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" styleClass="container">
             <children>
                 <BorderPane prefHeight="700.0" prefWidth="1000.0">
                     <center>
-                        <Canvas fx:id="canvasX" height="480.0" onMouseDragged="#mouseDragged"
-                                onMousePressed="#mousePressed"
-                                onMouseReleased="#mouseReleased" width="720.0" BorderPane.alignment="CENTER"/>
+                        <Canvas fx:id="canvasX" height="480.0" onMouseDragged="#mouseDragged" onMousePressed="#mousePressed" onMouseReleased="#mouseReleased" width="720.0" BorderPane.alignment="CENTER" />
                     </center>
                 </BorderPane>
-                <VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
-                      minWidth="-Infinity" prefHeight="700.0" prefWidth="250.0" styleClass="simulation-container">
+                <VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="250.0" styleClass="simulation-container">
                     <HBox.margin>
-                        <Insets bottom="10.0" right="10.0" top="10.0"/>
+                        <Insets bottom="10.0" right="10.0" top="10.0" />
                     </HBox.margin>
                     <children>
-                        <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
-                              minWidth="-Infinity" prefHeight="382.0" prefWidth="240.0"
-                              styleClass="simulation-container, parameter-container">
+                        <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="382.0" prefWidth="240.0" styleClass="simulation-container, parameter-container">
                             <VBox.margin>
-                                <Insets bottom="10.0"/>
+                                <Insets bottom="10.0" />
                             </VBox.margin>
                             <children>
                                 <Label fx:id="viscosityLabel" styleClass="small-text" text="Viscosity:">
                                     <VBox.margin>
-                                        <Insets top="10.0"/>
+                                        <Insets top="10.0" />
                                     </VBox.margin>
                                 </Label>
-                                <Slider fx:id="viscositySlider" blockIncrement="0.25" max="30.0" prefHeight="0.0"
-                                        prefWidth="85.0"
-                                        showTickLabels="true" showTickMarks="true" styleClass="small-text"/>
-                                <Label fx:id="diffusionRateLabel" layoutX="107.0" layoutY="21.0" styleClass="small-text"
-                                       text="Diffusion Rate:"/>
-                                <Slider fx:id="diffusionRateSlider" blockIncrement="0.25" layoutX="11.0" layoutY="38.0"
-                                        max="30.0"
-                                        prefHeight="0.0" prefWidth="85.0" showTickLabels="true" showTickMarks="true"
-                                        styleClass="small-text"/>
-                                <HBox alignment="TOP_CENTER" prefHeight="28.0" prefWidth="238.0" spacing="10.0"
-                                      styleClass="small-text">
+                                <Slider fx:id="viscositySlider" blockIncrement="0.25" majorTickUnit="5.0" max="30.0" minorTickCount="1" prefHeight="0.0" prefWidth="85.0" showTickLabels="true" showTickMarks="true" styleClass="small-text" />
+                                <Label fx:id="diffusionRateLabel" layoutX="107.0" layoutY="21.0" styleClass="small-text" text="Diffusion Rate:" />
+                                <Slider fx:id="diffusionRateSlider" blockIncrement="0.25" layoutX="11.0" layoutY="38.0" majorTickUnit="5.0" max="30.0" minorTickCount="1" prefHeight="0.0" prefWidth="85.0" showTickLabels="true" showTickMarks="true" styleClass="small-text" />
+                                <HBox alignment="TOP_CENTER" prefHeight="28.0" prefWidth="238.0" spacing="10.0" styleClass="small-text">
                                     <children>
-                                        <Label text="Container Type:" styleClass="small-text"/>
+                                        <Label styleClass="small-text" text="Container Type:" />
                                         <ChoiceBox fx:id="containerType" prefWidth="110.0">
                                             <items>
                                                 <FXCollections fx:factory="observableArrayList">
-                                                    <String fx:value="Box"/>
-                                                    <String fx:value="Tunnel"/>
+                                                    <String fx:value="Box" />
+                                                    <String fx:value="Tunnel" />
                                                 </FXCollections>
                                             </items>
                                         </ChoiceBox>
                                     </children>
                                 </HBox>
-                                <HBox alignment="TOP_CENTER" prefHeight="28.0" prefWidth="238.0" spacing="10.0"
-                                      styleClass="small-text">
+                                <HBox alignment="TOP_CENTER" prefHeight="28.0" prefWidth="238.0" spacing="10.0" styleClass="small-text">
                                     <children>
-                                        <Label text="Plot Choice:" styleClass="small-text"/>
+                                        <Label styleClass="small-text" text="Plot Choice:">
+                                 <HBox.margin>
+                                    <Insets right="22.0" />
+                                 </HBox.margin></Label>
                                         <ChoiceBox fx:id="plotChoice" prefWidth="110.0">
                                             <items>
                                                 <FXCollections fx:factory="observableArrayList">
-                                                    <String fx:value="Density"/>
-                                                    <String fx:value="x-Velocity"/>
-                                                    <String fx:value="y-Velocity"/>
+                                                    <String fx:value="Density" />
+                                                    <String fx:value="x-Velocity" />
+                                                    <String fx:value="y-Velocity" />
                                                 </FXCollections>
                                             </items>
                                         </ChoiceBox>
                                     </children>
                                 </HBox>
-                                <HBox alignment="TOP_CENTER" prefHeight="28.0" prefWidth="238.0" spacing="10.0"
-                                      styleClass="small-text">
+                                <HBox alignment="TOP_CENTER" prefHeight="28.0" prefWidth="238.0" spacing="10.0" styleClass="small-text">
                                     <children>
-                                        <Label text="Mouse Action:" styleClass="small-text"/>
+                                        <Label styleClass="small-text" text="Mouse Action:">
+                                 <HBox.margin>
+                                    <Insets right="15.0" />
+                                 </HBox.margin></Label>
                                         <ChoiceBox fx:id="mouseAction" prefWidth="110.0">
                                             <items>
                                                 <FXCollections fx:factory="observableArrayList">
-                                                    <String fx:value="Drag Fluid"/>
-                                                    <String fx:value="Add barrier"/>
-                                                    <String fx:value="Delete barrier"/>
+                                                    <String fx:value="Drag Fluid" />
+                                                    <String fx:value="Add barrier" />
+                                                    <String fx:value="Delete barrier" />
                                                 </FXCollections>
                                             </items>
                                         </ChoiceBox>
                                     </children>
                                 </HBox>
-
-                                <HBox alignment="TOP_CENTER" layoutX="11.0" layoutY="130.0" prefHeight="28.0"
-                                      prefWidth="238.0" spacing="10.0">
-                                    <children>
-                                        <CheckBox fx:id="sensorCheckbox" mnemonicParsing="false"
-                                                  onAction="#onSensorCheckBoxClick"
-                                                  prefHeight="16.0" prefWidth="74.0" styleClass="small-text"
-                                                  text="Sensors"/>
-                                    </children>
-                                    <padding>
-                                        <Insets top="5.0"/>
-                                    </padding>
-                                </HBox>
-                                <Button fx:id="startSimulationButton" mnemonicParsing="false"
-                                        onAction="#onStartSimulationClick"
-                                        text="Start Simulation"/>
+                        <HBox alignment="CENTER" layoutX="11.0" layoutY="182.0" prefHeight="28.0" prefWidth="238.0" spacing="10.0" styleClass="small-text">
+                           <children>
+                              <CheckBox fx:id="addDensityCheckbox" alignment="CENTER" mnemonicParsing="false" onAction="#onAddDensityCheckBoxClick" styleClass="small-text" text="Add density">
+                                 <padding>
+                                    <Insets left="10.0" />
+                                 </padding>
+                              </CheckBox>
+                              <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
+                                 <children>
+                                    <Label fx:id="densityLabel" alignment="CENTER" contentDisplay="CENTER" styleClass="small-text" text="Density" />
+                                    <Slider fx:id="densitySlider" majorTickUnit="5.0" max="10.0" minorTickCount="1" showTickLabels="true" showTickMarks="true" />
+                                 </children>
+                              </VBox>
+                           </children>
+                        </HBox>
+                                  <CheckBox fx:id="sensorCheckbox" mnemonicParsing="false" onAction="#onSensorCheckBoxClick" prefHeight="16.0" prefWidth="74.0" styleClass="small-text" text="Sensors" />
+                                <Button fx:id="startSimulationButton" mnemonicParsing="false" onAction="#onStartSimulationClick" text="Start Simulation" />
                             </children>
                         </VBox>
-                        <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-                              prefHeight="234.0"
-                              prefWidth="240.0" styleClass="simulation-container, parameter-container">
+                        <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="234.0" prefWidth="240.0" styleClass="simulation-container, parameter-container">
                             <VBox.margin>
-                                <Insets bottom="10.0"/>
+                                <Insets bottom="10.0" />
                             </VBox.margin>
                         </Pane>
-                        <Button maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-                                mnemonicParsing="false"
-                                onAction="#onGoToSettingsClick" prefHeight="20.0" prefWidth="240.0"
-                                styleClass="menu-button" text="Settings">
+                        <Button maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onGoToSettingsClick" prefHeight="20.0" prefWidth="240.0" styleClass="menu-button" text="Settings">
                             <VBox.margin>
-                                <Insets bottom="5.0"/>
+                                <Insets bottom="5.0" />
                             </VBox.margin>
                         </Button>
-                        <Button maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-                                mnemonicParsing="false"
-                                onAction="#onReturnToHomeButtonClick" prefHeight="20.0" prefWidth="240.0"
-                                styleClass="menu-button"
-                                text="Return To Home"/>
+                        <Button maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onReturnToHomeButtonClick" prefHeight="20.0" prefWidth="240.0" styleClass="menu-button" text="Return To Home" />
                     </children>
                 </VBox>
             </children>
