@@ -7,6 +7,7 @@
 <?import javafx.scene.canvas.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" styleClass="main-theme" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.fluidity.program.ui.controllers.SimulationController">
     <stylesheets>
@@ -101,8 +102,26 @@
                               </VBox>
                            </children>
                         </HBox>
-                                  <CheckBox fx:id="sensorCheckbox" mnemonicParsing="false" onAction="#onSensorCheckBoxClick" prefHeight="16.0" prefWidth="74.0" styleClass="small-text" text="Sensors" />
-                                <Button fx:id="startSimulationButton" mnemonicParsing="false" onAction="#onStartSimulationClick" text="Start Simulation" />
+                                  <CheckBox fx:id="sensorCheckbox" mnemonicParsing="false" onAction="#onSensorCheckBoxClick" prefHeight="16.0" prefWidth="74.0" styleClass="small-text" text="Sensors">
+                           <padding>
+                              <Insets bottom="10.0" />
+                           </padding></CheckBox>
+                        <Button fx:id="startRecordingButton" mnemonicParsing="false" onAction="#onStartRecordingClick" prefHeight="10.0" prefWidth="120.0" text="Start Recording" textAlignment="CENTER">
+                           <font>
+                              <Font size="11.0" />
+                           </font>
+                           <VBox.margin>
+                              <Insets bottom="10.0" />
+                           </VBox.margin>
+                        </Button>
+                                <Button fx:id="startSimulationButton" mnemonicParsing="false" onAction="#onStartSimulationClick" prefHeight="10.0" prefWidth="120.0" text="Start Simulation" textAlignment="CENTER">
+                           <font>
+                              <Font size="11.0" />
+                           </font>
+                           <VBox.margin>
+                              <Insets bottom="10.0" />
+                           </VBox.margin>
+                        </Button>
                             </children>
                         </VBox>
                         <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="234.0" prefWidth="240.0" styleClass="simulation-container, parameter-container">

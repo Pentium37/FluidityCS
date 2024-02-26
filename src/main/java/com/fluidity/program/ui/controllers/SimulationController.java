@@ -2,11 +2,13 @@ package com.fluidity.program.ui.controllers;
 
 import com.fluidity.program.simulation.FluidInput;
 import com.fluidity.program.simulation.SimulationThreaded;
+import com.fluidity.program.simulation.fluid.Fluid;
 import com.fluidity.program.ui.FluidUIAction;
 import com.fluidity.program.ui.MouseListener;
 import com.fluidity.program.ui.ProgramState;
 import com.fluidity.program.utilities.ExtraMath;
 import com.fluidity.program.utilities.FileHandler;
+import com.fluidity.program.utilities.Queue;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
@@ -26,24 +28,32 @@ import static java.lang.Math.hypot;
 
 public class SimulationController extends Controller implements MouseListener {
 	@FXML
+	Canvas canvasX;
+
+	@FXML
 	private CheckBox sensorCheckbox;
 	private boolean sensorOn;
+
 	@FXML
 	private CheckBox addDensityCheckbox;
 	private boolean addDensity;
+
 	@FXML
 	private Slider densitySlider;
 	@FXML
 	private Label densityLabel;
 	public double densityFactor;
+
 	@FXML
 	private Slider viscositySlider;
 	@FXML
 	private Label viscosityLabel;
+
 	@FXML
 	private Slider diffusionRateSlider;
 	@FXML
 	private Label diffusionRateLabel;
+
 	@FXML
 	private Button startSimulationButton;
 	@FXML
@@ -52,23 +62,32 @@ public class SimulationController extends Controller implements MouseListener {
 	private ChoiceBox<String> plotChoice;
 	@FXML
 	private ChoiceBox<String> mouseAction;
-	@FXML
-	Canvas canvasX;
+
 	private boolean mouseHeld;
 	// Change to Queue
-	private List<FluidInput> sourceQueue;
+	private Queue<FluidInput> sourceQueue;
 	private Instant startAdd;
 	private int[] previousCoords;
+
 	private SimulationThreaded simulation;
 	private boolean simulationStarted;
 	private Future<?> simulationFuture;
-	private Map<FluidUIAction, KeyCode> keyBindMap;
+
 	private double viscosity, diffusionRate;
 	private boolean dragFluid, addBarrier, removeBarrier;
 	private int CELL_LENGTH;
 	private boolean savingEnabled;
 	private int ITERATIONS;
 	private int FPS;
+
+
+	@FXML
+	private Button startRecordingButton;
+	private boolean recordingStarted;
+	private Queue<Queue<FluidInput>> recordingQueue;
+	private String initialFluidStateOutput;
+
+	private Map<FluidUIAction, KeyCode> keyBindMap;
 
 	private static final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor(r -> {
 		Thread thread = new Thread(r);
@@ -80,8 +99,11 @@ public class SimulationController extends Controller implements MouseListener {
 	public void initialize(final URL url, final ResourceBundle resourceBundle) {
 		this.viscosity = 0;
 		this.diffusionRate = 0;
-		sourceQueue = new ArrayList<>();
+		startRecordingButton.setDisable(true);
+		sourceQueue = new Queue<>();
+
 		startAdd = Instant.now();
+		recordingStarted = false;
 
 		int IMAGE_WIDTH = 720;
 		int IMAGE_HEIGHT = 480;
@@ -162,7 +184,7 @@ public class SimulationController extends Controller implements MouseListener {
 
 			startAdd = Instant.now();
 			previousCoords = new int[] { (int) e.getX(), (int) e.getY() };
-			sourceQueue.add(new FluidInput(previousCoords[0], previousCoords[1], velocityX, velocityY,
+			sourceQueue.enqueue(new FluidInput(previousCoords[0], previousCoords[1], velocityX, velocityY,
 					densityFactor * hypot(velocityX, velocityY), CELL_LENGTH));
 		}
 	}
@@ -173,14 +195,19 @@ public class SimulationController extends Controller implements MouseListener {
 			long timeHeld = Duration.between(startAdd, Instant.now())
 					.toMillis();
 			startAdd = Instant.now();
-			sourceQueue.add(new FluidInput(previousCoords[0], previousCoords[1], 0, 0, timeHeld * densityFactor * (20.0/6), CELL_LENGTH));
+			sourceQueue.enqueue(
+					new FluidInput(previousCoords[0], previousCoords[1], 0, 0, timeHeld * densityFactor * (20.0 / 6),
+							CELL_LENGTH));
 		}
 
-		for (FluidInput source : sourceQueue) {
-			sourceConsumer.accept(source);
+		if (recordingStarted) {
+			recordingQueue.enqueue(sourceQueue.copy());
 		}
 
-		sourceQueue.clear();
+		while (!sourceQueue.isEmpty()) {
+			FluidInput inputSource = sourceQueue.dequeue();
+			sourceConsumer.accept(inputSource);
+		}
 	}
 
 	@FXML
@@ -221,6 +248,19 @@ public class SimulationController extends Controller implements MouseListener {
 		}
 	}
 
+	@FXML
+	private void onStartRecordingClick() {
+		if (!recordingStarted) {
+			initialiseRecording();
+			recordingStarted = true;
+			startRecordingButton.setText("Stop Recording");
+		} else {
+			recordingStarted = false;
+			startRecordingButton.setText("Start Recording");
+			saveRecordingsToFile();
+		}
+	}
+
 	private void createListeners() {
 		viscositySlider.valueProperty()
 				.addListener((obs, oldVal, newVal) -> {
@@ -234,7 +274,7 @@ public class SimulationController extends Controller implements MouseListener {
 				.addListener((obs, oldVal, newVal) -> {
 					validateInitialisation();
 					diffusionRate = ExtraMath.roundToTwoDecimalPlaces(diffusionRateSlider.getValue());
-					diffusionRateLabel.setText("Flow Speed: " + diffusionRate);
+					diffusionRateLabel.setText("Diffusion Rate: " + diffusionRate);
 					simulation.setDiffusionRate(diffusionRate);
 				});
 
@@ -345,6 +385,7 @@ public class SimulationController extends Controller implements MouseListener {
 	private void startSimulation() {
 		viscositySlider.setDisable(true);
 		diffusionRateSlider.setDisable(true);
+		startRecordingButton.setDisable(false);
 		simulationFuture = EXECUTOR.submit(simulation);
 		startSimulationButton.setText("Pause Simulation");
 		simulationStarted = true;
@@ -353,9 +394,53 @@ public class SimulationController extends Controller implements MouseListener {
 	private void endSimulation() {
 		viscositySlider.setDisable(false);
 		diffusionRateSlider.setDisable(false);
+		startRecordingButton.setDisable(true);
 		simulationStarted = false;
 		simulationFuture.cancel(true);
 		startSimulationButton.setText("Start Simulation");
+
+		if (recordingStarted) {
+			saveRecordingsToFile();
+		}
 	}
 
+	private void saveRecordingsToFile() {
+		recordingStarted = false;
+
+		List<String> recordingInfo = FileHandler.readFile("recordings-info.txt");
+		StringBuilder recordingInfoOutput = new StringBuilder();
+		String recordingFileName = "recording-";
+		String propertiesFileName = "properties-";
+
+		boolean check = true;
+		for (int i = 0; i < recordingInfo.size(); i++) {
+
+			if (recordingInfo.get(i).equals("") && check) {
+				recordingFileName += i + ".txt";
+				propertiesFileName += i + ".txt";
+				recordingInfo.add(i, recordingFileName);
+				check = false;
+			}
+
+			recordingInfoOutput.append(recordingInfo.get(i))
+					.append("\n");
+		}
+
+		FileHandler.writeLine("recordings-info.txt", recordingInfoOutput.toString());
+		FileHandler.writeLine(recordingFileName, recordingQueue.toString());
+		FileHandler.writeLine(propertiesFileName, initialFluidStateOutput);
+	}
+
+	private void initialiseRecording() {
+		recordingQueue = new Queue<>();
+		recordingStarted = true;
+		createOutputForInitialFluidState();
+		recordingQueue.setMAX_SIZE(10800); // 3 minutes of recording at 60 FPS
+	}
+
+	private void createOutputForInitialFluidState() {
+		Fluid fluid = simulation.getFluid();
+		//Add fluid type soon
+		initialFluidStateOutput = Arrays.toString(fluid.dens) + "\n" + Arrays.toString(fluid.u) + "\n" + Arrays.toString(fluid.v);
+	}
 }

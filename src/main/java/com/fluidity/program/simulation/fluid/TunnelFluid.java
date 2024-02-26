@@ -1,18 +1,10 @@
 package com.fluidity.program.simulation.fluid;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class TunnelFluid extends Fluid {
 
 	public TunnelFluid(final int WIDTH, final int HEIGHT, final int CELL_LENGTH, final double viscosity,
 			final double diffusionRate, final int ITERATIONS) {
 		super(WIDTH, HEIGHT, CELL_LENGTH, viscosity, diffusionRate, ITERATIONS);
-		barrierCoords = new ArrayList<>();
-
-		for (int i = 0; i < 30; i++) {
-			barrierCoords.add(new int[] { 30, 20 + i });
-		}
 	}
 
 	@Override
@@ -40,10 +32,5 @@ public class TunnelFluid extends Fluid {
 		for (int i = 1; i < 5; i++) {
 			dens[index(1, this.HEIGHT / 2 - i)] += 25;
 		}
-	}
-
-	@Override
-	void setBarriers(final int b, final double[] destination) {
-
 	}
 }

@@ -35,9 +35,4 @@ public class BoxFluid extends Fluid {
 	void conditions() {
 
 	}
-
-	@Override
-	void setBarriers(final int b, final double[] destination) {
-
-	}
 }

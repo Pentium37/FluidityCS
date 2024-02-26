@@ -162,5 +162,11 @@ public abstract class Fluid {
 
 	abstract void setBoundary(int b, double[] destination);
 	abstract  void conditions();
-	abstract void setBarriers(final int b, final double[] destination);
+	public void setBarriers(final int b, final double[] destination) {
+		for (int[] barrierCoord : barrierCoords) {
+			int x = barrierCoord[0];
+			int y = barrierCoord[1];
+			destination[index(x, y)] = (b == 2) ? -destination[index(x, y)] : destination[index(x, y)];
+		}
+	}
 }

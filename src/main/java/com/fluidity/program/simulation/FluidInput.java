@@ -18,11 +18,6 @@ public class FluidInput {
 
 	@Override
 	public String toString() {
-		return new StringJoiner(", ", FluidInput.class.getSimpleName() + "[", "]").add("forceX=" + forceX)
-				.add("forceY=" + forceY)
-				.add("density=" + density)
-				.add("x=" + x)
-				.add("y=" + y)
-				.toString();
+		return "{" + x + "," + y + "," + forceX + "," + forceY + "," + density + "}";
 	}
 }
