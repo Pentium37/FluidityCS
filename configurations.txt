@@ -1,8 +1,10 @@
-primary-pause:A
-primary-step-forward:Space
+primary-pause:Space
+primary-step-forward:Right
+primary-step-backward:Left
 secondary-pause:S
-secondary-step-forward:Left
-saving:false
+secondary-step-forward:U
+secondary-step-backward:X
+saving:true
 FPS:60
 iterations:4
 cell-size:5,5

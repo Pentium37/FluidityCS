@@ -11,13 +11,6 @@ public class Deque<T> extends Queue<T> {
 		super(MAX_SIZE);
 	}
 
-	public void push(T data) {
-		extendSize();
-		headPointer = (headPointer - 1 + MAX_SIZE) % MAX_SIZE;
-		queue[headPointer] = data;
-		size++;
-	}
-
 	public T pop() {
 		if (size == 0) {
 			throw new NoSuchElementException();
@@ -25,5 +18,10 @@ public class Deque<T> extends Queue<T> {
 		T data = queue[(headPointer + size - 1) % MAX_SIZE];
 		size--;
 		return data;
+	}
+
+	@Override
+	public String toString() {
+		return super.toString();
 	}
 }

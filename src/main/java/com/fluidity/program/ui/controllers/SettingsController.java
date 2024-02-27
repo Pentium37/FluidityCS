@@ -5,7 +5,6 @@ import com.fluidity.program.ui.GraphicsHandler;
 import com.fluidity.program.ui.ProgramState;
 import com.fluidity.program.utilities.FileHandler;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TabPane;
 import javafx.scene.input.KeyCode;

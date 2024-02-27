@@ -50,7 +50,7 @@ public class Queue<T> {
 		return queue[headPointer];
 	}
 
-	void extendSize() {
+	public void extendSize() {
 		if (size == MAX_SIZE) {
 			if (maxSizeSet) {
 				throw new IllegalStateException();
@@ -61,11 +61,16 @@ public class Queue<T> {
 				}
 				queue = newQueue;
 				headPointer = 0;
+				MAX_SIZE = queue.length;
 			}
 		}
 	}
 	public boolean isEmpty() {
 		return size == 0;
+	}
+
+	public boolean isFull() {
+		return size == MAX_SIZE;
 	}
 
 	public void setMAX_SIZE(int MAX_SIZE) {
@@ -98,11 +103,14 @@ public class Queue<T> {
 	@Override
 	public String toString() {
 		StringBuilder output = new StringBuilder();
-		for (T t : queue) {
-			output.append(t.toString())
-					.append(" ");
+		output.append("[");
+		for (int i = 0; i < size; i++) {
+			output.append(queue[(headPointer + i) % MAX_SIZE]);
+			if (i != size - 1) {
+				output.append(", ");
+			}
 		}
-		output.append("\n");
+		output.append("]\n");
 		return output.toString();
 	}
 }

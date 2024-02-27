@@ -2,6 +2,7 @@ package com.fluidity.program;
 
 import com.fluidity.program.ui.Manager;
 import com.fluidity.program.ui.ProgramState;
+import com.fluidity.program.utilities.Deque;
 import com.fluidity.program.utilities.FileHandler;
 import javafx.application.Application;
 import javafx.stage.Stage;

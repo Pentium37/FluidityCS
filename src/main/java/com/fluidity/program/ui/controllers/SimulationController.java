@@ -13,7 +13,9 @@ import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 
 import java.net.URL;
 import java.time.Duration;
@@ -80,14 +82,16 @@ public class SimulationController extends Controller implements MouseListener {
 	private int ITERATIONS;
 	private int FPS;
 
-
 	@FXML
 	private Button startRecordingButton;
 	private boolean recordingStarted;
 	private Queue<Queue<FluidInput>> recordingQueue;
 	private String initialFluidStateOutput;
 
-	private Map<FluidUIAction, KeyCode> keyBindMap;
+	private Map<KeyCode, FluidUIAction> keyBindMap;
+
+	@FXML
+	AnchorPane simulationPane;
 
 	private static final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor(r -> {
 		Thread thread = new Thread(r);
@@ -97,6 +101,7 @@ public class SimulationController extends Controller implements MouseListener {
 
 	@Override
 	public void initialize(final URL url, final ResourceBundle resourceBundle) {
+		setEventFilters();
 		this.viscosity = 0;
 		this.diffusionRate = 0;
 		startRecordingButton.setDisable(true);
@@ -108,7 +113,7 @@ public class SimulationController extends Controller implements MouseListener {
 		int IMAGE_WIDTH = 720;
 		int IMAGE_HEIGHT = 480;
 
-		keyBindMap = new EnumMap<>(FluidUIAction.class);
+		keyBindMap = new HashMap<KeyCode, FluidUIAction>();
 		simulation = new SimulationThreaded(canvasX, this, IMAGE_WIDTH, IMAGE_HEIGHT);
 
 		viscositySlider.setDisable(true);
@@ -117,6 +122,64 @@ public class SimulationController extends Controller implements MouseListener {
 
 		createListeners();
 		simulationStarted = false;
+	}
+
+	public void setEventFilters() {
+		simulationPane.addEventFilter(KeyEvent.KEY_TYPED, keyEvent -> {
+			if (keyEvent.getCode()
+					.isArrowKey() || keyEvent.getCode() == KeyCode.SPACE) {
+				onKeyPressed(keyEvent);
+				keyEvent.consume();
+			}
+		});
+		startSimulationButton.addEventFilter(KeyEvent.KEY_TYPED, keyEvent -> {
+			if (keyEvent.getCode()
+					.isArrowKey() || keyEvent.getCode() == KeyCode.SPACE) {
+				keyEvent.consume();
+			}
+		});
+		startRecordingButton.addEventFilter(KeyEvent.KEY_TYPED, keyEvent -> {
+			if (keyEvent.getCode()
+					.isArrowKey() || keyEvent.getCode() == KeyCode.SPACE) {
+				keyEvent.consume();
+			}
+		});
+		addDensityCheckbox.addEventFilter(KeyEvent.KEY_TYPED, keyEvent -> {
+			if (keyEvent.getCode()
+					.isArrowKey() || keyEvent.getCode() == KeyCode.SPACE) {
+				keyEvent.consume();
+			}
+		});
+		sensorCheckbox.addEventFilter(KeyEvent.KEY_TYPED, keyEvent -> {
+			if (keyEvent.getCode()
+					.isArrowKey() || keyEvent.getCode() == KeyCode.SPACE) {
+				keyEvent.consume();
+			}
+		});
+		densitySlider.addEventFilter(KeyEvent.KEY_TYPED, keyEvent -> {
+			if (keyEvent.getCode()
+					.isArrowKey() || keyEvent.getCode() == KeyCode.SPACE) {
+				keyEvent.consume();
+			}
+		});
+		plotChoice.addEventFilter(KeyEvent.KEY_TYPED, keyEvent -> {
+			if (keyEvent.getCode()
+					.isArrowKey() || keyEvent.getCode() == KeyCode.SPACE) {
+				keyEvent.consume();
+			}
+		});
+		containerType.addEventFilter(KeyEvent.KEY_TYPED, keyEvent -> {
+			if (keyEvent.getCode()
+					.isArrowKey() || keyEvent.getCode() == KeyCode.SPACE) {
+				keyEvent.consume();
+			}
+		});
+		mouseAction.addEventFilter(KeyEvent.KEY_TYPED, keyEvent -> {
+			if (keyEvent.getCode()
+					.isArrowKey() || keyEvent.getCode() == KeyCode.SPACE) {
+				keyEvent.consume();
+			}
+		});
 	}
 
 	private void loadConfigurations() {
@@ -130,7 +193,7 @@ public class SimulationController extends Controller implements MouseListener {
 
 			try {
 				FluidUIAction action = FluidUIAction.getByPath(configuration[0]);
-				keyBindMap.put(action, KeyCode.getKeyCode(configuration[1]));
+				keyBindMap.put(KeyCode.getKeyCode(configuration[1]), action);
 			} catch (IllegalArgumentException e) {
 				switch (configuration[0]) {
 					case "saving" -> {
@@ -415,7 +478,8 @@ public class SimulationController extends Controller implements MouseListener {
 		boolean check = true;
 		for (int i = 0; i < recordingInfo.size(); i++) {
 
-			if (recordingInfo.get(i).equals("") && check) {
+			if (recordingInfo.get(i)
+					.equals("") && check) {
 				recordingFileName += i + ".txt";
 				propertiesFileName += i + ".txt";
 				recordingInfo.add(i, recordingFileName);
@@ -441,6 +505,31 @@ public class SimulationController extends Controller implements MouseListener {
 	private void createOutputForInitialFluidState() {
 		Fluid fluid = simulation.getFluid();
 		//Add fluid type soon
-		initialFluidStateOutput = Arrays.toString(fluid.dens) + "\n" + Arrays.toString(fluid.u) + "\n" + Arrays.toString(fluid.v);
+		initialFluidStateOutput =
+				Arrays.toString(fluid.dens) + "\n" + Arrays.toString(fluid.u) + "\n" + Arrays.toString(fluid.v);
+	}
+
+	@FXML
+	public void onKeyPressed(KeyEvent keyEvent) {
+		if (keyBindMap.containsKey(keyEvent.getCode())) {
+			if (keyBindMap.get(keyEvent.getCode()) == FluidUIAction.PRIMARY_PAUSE
+					|| keyBindMap.get(keyEvent.getCode()) == FluidUIAction.SECONDARY_PAUSE) {
+				if (!simulationStarted) {
+					startSimulation();
+				} else {
+					endSimulation();
+				}
+			} else if (keyBindMap.get(keyEvent.getCode()) == FluidUIAction.PRIMARY_STEP_BACKWARD
+					|| keyBindMap.get(keyEvent.getCode()) == FluidUIAction.SECONDARY_STEP_BACKWARD) {
+				if (savingEnabled && !simulationStarted) {
+					simulation.rollback();
+				}
+			} else if (keyBindMap.get(keyEvent.getCode()) == FluidUIAction.PRIMARY_STEP_FORWARD
+					|| keyBindMap.get(keyEvent.getCode()) == FluidUIAction.SECONDARY_STEP_FORWARD) {
+				if (savingEnabled && !simulationStarted) {
+					simulation.step();
+				}
+			}
+		}
 	}
 }

@@ -4,6 +4,7 @@ import com.fluidity.program.simulation.fluid.BoxFluid;
 import com.fluidity.program.simulation.fluid.Fluid;
 import com.fluidity.program.simulation.fluid.TunnelFluid;
 import com.fluidity.program.ui.MouseListener;
+import com.fluidity.program.utilities.Deque;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelWriter;
@@ -23,6 +24,9 @@ public class SimulationThreaded implements Runnable {
 	private int ITERATIONS;
 	private double DESIRED_FPS;
 	private double TPS;
+
+	private Deque<FluidState> rollbackMemory;
+
 	public SimulationThreaded(Canvas canvas, MouseListener mouseAdapter, int IMAGE_WIDTH, int IMAGE_HEIGHT) {
 		this.canvas = canvas;
 		this.mouseAdapter = mouseAdapter;
@@ -30,6 +34,7 @@ public class SimulationThreaded implements Runnable {
 		this.IMAGE_HEIGHT = IMAGE_HEIGHT;
 		this.running = false;
 		this.initialised = false;
+		rollbackMemory = new Deque<>(30);
 	}
 
 	@Override
@@ -44,6 +49,7 @@ public class SimulationThreaded implements Runnable {
 		double unprocessedTime = 0;
 		double frameTime = 0;
 
+		int tick = 0;
 		while (running) {
 			long now = System.nanoTime();
 			long passedTime = now - lastTime;
@@ -59,14 +65,20 @@ public class SimulationThreaded implements Runnable {
 			}
 
 			// Render if it's time for a new frame
-			if (frameTime >= TIME_PER_FRAME) {
-				if (densityPlot) {
-					render(fluid.dens.clone()); // Render with the most recent fluid density
-				} else if (xVelocityPlot) {
-					render(fluid.u.clone()); // Render with the most recent fluid density
-				} else if (yVelocityPlot) {
-					render(fluid.v.clone()); // Render with the most recent fluid density
+
+			tick++;
+			if (tick == DESIRED_FPS/2) {
+				tick = 0;
+
+				if (!rollbackMemory.isFull()) {
+					rollbackMemory.enqueue(new FluidState(fluid.dens.clone(), fluid.u.clone(), fluid.v.clone()));
+				} else {
+					rollbackMemory.dequeue();
+					rollbackMemory.enqueue(new FluidState(fluid.dens.clone(), fluid.u.clone(), fluid.v.clone()));
 				}
+			}
+			if (frameTime >= TIME_PER_FRAME) {
+				render();
 
 				frameTime = 0;
 			}
@@ -171,11 +183,37 @@ public class SimulationThreaded implements Runnable {
 			plotFactor = 1;
 			densityPlot = true;
 		} else if (plotType.equals("x-Velocity")) {
-			plotFactor = 1000;
+			plotFactor = 100;
 			xVelocityPlot = true;
 		} else if (plotType.equals("y-Velocity")) {
 			plotFactor = 100;
 			yVelocityPlot = true;
 		}
+	}
+
+	public void render() {
+		if (densityPlot) {
+			render(fluid.dens.clone()); // Render with the most recent fluid density
+		} else if (xVelocityPlot) {
+			render(fluid.u.clone()); // Render with the most recent fluid density
+		} else if (yVelocityPlot) {
+			render(fluid.v.clone()); // Render with the most recent fluid density
+		}
+	}
+	public void rollback() {
+		if (!rollbackMemory.isEmpty()) {
+			FluidState state = rollbackMemory.pop();
+			fluid.dens = state.dens;
+			fluid.u = state.u;
+			fluid.v = state.v;
+		}
+		render();
+	}
+
+	public void step() {
+		for (int i = 0; i < DESIRED_FPS; i++) {
+			fluid.step(1.0 / TPS);
+		}
+		render();
 	}
 }
