@@ -459,6 +459,9 @@ public class SimulationController extends Controller implements MouseListener {
 		diffusionRateSlider.setDisable(false);
 		startRecordingButton.setDisable(true);
 		simulationStarted = false;
+		if (recordingStarted) {
+			onStartRecordingClick();
+		}
 		simulationFuture.cancel(true);
 		startSimulationButton.setText("Start Simulation");
 

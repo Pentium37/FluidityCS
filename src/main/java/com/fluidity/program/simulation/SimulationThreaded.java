@@ -67,7 +67,7 @@ public class SimulationThreaded implements Runnable {
 			// Render if it's time for a new frame
 
 			tick++;
-			if (tick == DESIRED_FPS/2) {
+			if (tick == DESIRED_FPS/5) {
 				tick = 0;
 
 				if (!rollbackMemory.isFull()) {
