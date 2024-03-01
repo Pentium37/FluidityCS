@@ -39,10 +39,13 @@
                                 </Label>
                                 <Slider fx:id="viscositySlider" blockIncrement="0.25" majorTickUnit="5.0" max="30.0" minorTickCount="1" prefHeight="0.0" prefWidth="85.0" showTickLabels="true" showTickMarks="true" styleClass="small-text" />
                                 <Label fx:id="diffusionRateLabel" layoutX="107.0" layoutY="21.0" styleClass="small-text" text="Diffusion Rate:" />
-                                <Slider fx:id="diffusionRateSlider" blockIncrement="0.25" layoutX="11.0" layoutY="38.0" majorTickUnit="5.0" max="30.0" minorTickCount="1" prefHeight="0.0" prefWidth="85.0" showTickLabels="true" showTickMarks="true" styleClass="small-text" />
+                                <Slider fx:id="diffusionRateSlider" blockIncrement="0.25" layoutX="11.0" layoutY="38.0" majorTickUnit="0.5" max="5.0" minorTickCount="1" prefHeight="0.0" prefWidth="85.0" showTickLabels="true" showTickMarks="true" styleClass="small-text" />
                                 <HBox alignment="TOP_CENTER" prefHeight="28.0" prefWidth="238.0" spacing="10.0" styleClass="small-text">
                                     <children>
-                                        <Label styleClass="small-text" text="Container Type:" />
+                                        <Label styleClass="small-text" text="Container Type:">
+                                 <HBox.margin>
+                                    <Insets top="5.0" />
+                                 </HBox.margin></Label>
                                         <ChoiceBox fx:id="containerType" prefWidth="110.0">
                                             <items>
                                                 <FXCollections fx:factory="observableArrayList">
@@ -57,7 +60,7 @@
                                     <children>
                                         <Label styleClass="small-text" text="Plot Choice:">
                                  <HBox.margin>
-                                    <Insets right="22.0" />
+                                    <Insets right="22.0" top="5.0" />
                                  </HBox.margin></Label>
                                         <ChoiceBox fx:id="plotChoice" prefWidth="110.0">
                                             <items>
@@ -74,7 +77,7 @@
                                     <children>
                                         <Label styleClass="small-text" text="Mouse Action:">
                                  <HBox.margin>
-                                    <Insets right="15.0" />
+                                    <Insets right="15.0" top="5.0" />
                                  </HBox.margin></Label>
                                         <ChoiceBox fx:id="mouseAction" prefWidth="110.0">
                                             <items>
@@ -102,10 +105,17 @@
                               </VBox>
                            </children>
                         </HBox>
-                                  <CheckBox fx:id="sensorCheckbox" mnemonicParsing="false" onAction="#onSensorCheckBoxClick" prefHeight="16.0" prefWidth="74.0" styleClass="small-text" text="Sensors">
-                           <padding>
-                              <Insets bottom="10.0" />
-                           </padding></CheckBox>
+                        <HBox alignment="CENTER" layoutX="11.0" layoutY="210.0" prefHeight="28.0" prefWidth="238.0" spacing="10.0" styleClass="small-text">
+                           <children>
+                              <Button fx:id="addSensorButton" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#onAddSensorClick" prefWidth="220.0" text="Add Sensor" textAlignment="CENTER">
+                                 <font>
+                                    <Font size="11.0" />
+                                 </font></Button>
+                           </children>
+                           <VBox.margin>
+                              <Insets bottom="15.0" />
+                           </VBox.margin>
+                        </HBox>
                         <Button fx:id="startRecordingButton" mnemonicParsing="false" onAction="#onStartRecordingClick" prefHeight="10.0" prefWidth="120.0" text="Start Recording" textAlignment="CENTER">
                            <font>
                               <Font size="11.0" />

@@ -20,6 +20,19 @@ public class Deque<T> extends Queue<T> {
 		return data;
 	}
 
+	public void retrievePush(){
+		if (!isFull() && queue[(headPointer + size) % MAX_SIZE] != null) {
+			size++;
+		}
+	}
+
+	public T peekStack() {
+		if (size == 0) {
+			throw new NoSuchElementException();
+		}
+		return queue[(headPointer + size - 1) % MAX_SIZE];
+	}
+
 	@Override
 	public String toString() {
 		return super.toString();

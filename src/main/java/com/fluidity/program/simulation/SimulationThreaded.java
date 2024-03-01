@@ -8,6 +8,7 @@ import com.fluidity.program.utilities.Deque;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelWriter;
+import javafx.scene.paint.Color;
 
 public class SimulationThreaded implements Runnable {
 	private final Canvas canvas;
@@ -24,6 +25,9 @@ public class SimulationThreaded implements Runnable {
 	private int ITERATIONS;
 	private double DESIRED_FPS;
 	private double TPS;
+	private boolean sensorOn;
+	private int sensorX;
+	private int sensorY;
 
 	private Deque<FluidState> rollbackMemory;
 
@@ -34,7 +38,7 @@ public class SimulationThreaded implements Runnable {
 		this.IMAGE_HEIGHT = IMAGE_HEIGHT;
 		this.running = false;
 		this.initialised = false;
-		rollbackMemory = new Deque<>(30);
+		rollbackMemory = new Deque<>(50);
 	}
 
 	@Override
@@ -67,7 +71,7 @@ public class SimulationThreaded implements Runnable {
 			// Render if it's time for a new frame
 
 			tick++;
-			if (tick == DESIRED_FPS/5) {
+			if (tick == DESIRED_FPS / 15) {
 				tick = 0;
 
 				if (!rollbackMemory.isFull()) {
@@ -76,10 +80,12 @@ public class SimulationThreaded implements Runnable {
 					rollbackMemory.dequeue();
 					rollbackMemory.enqueue(new FluidState(fluid.dens.clone(), fluid.u.clone(), fluid.v.clone()));
 				}
+				if (sensorOn) {
+					System.out.println("Sensor: " + fluid.dens[fluid.index(sensorX, sensorY)]);
+				}
 			}
 			if (frameTime >= TIME_PER_FRAME) {
 				render();
-
 				frameTime = 0;
 			}
 
@@ -108,6 +114,13 @@ public class SimulationThreaded implements Runnable {
 			}
 		}
 
+		if (sensorOn) {
+			for (int j = 0; j < CELL_LENGTH; j++) {
+				for (int i = 0; i < CELL_LENGTH; i++) {
+					buffer[sensorX + i + (sensorY + j) * IMAGE_WIDTH] = 0xFF009AFF;
+				}
+			}
+		}
 		PixelWriter writer = canvas.getGraphicsContext2D()
 				.getPixelWriter();
 		writer.setPixels(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT, PixelFormat.getIntArgbInstance(), buffer, 0, IMAGE_WIDTH);
@@ -200,6 +213,7 @@ public class SimulationThreaded implements Runnable {
 			render(fluid.v.clone()); // Render with the most recent fluid density
 		}
 	}
+
 	public void rollback() {
 		if (!rollbackMemory.isEmpty()) {
 			FluidState state = rollbackMemory.pop();
@@ -210,10 +224,24 @@ public class SimulationThreaded implements Runnable {
 		render();
 	}
 
-	public void step() {
-		for (int i = 0; i < DESIRED_FPS; i++) {
-			fluid.step(1.0 / TPS);
+	public void retrieveRollback() {
+		if (!rollbackMemory.isFull()) {
+			rollbackMemory.retrievePush();
+			FluidState state = rollbackMemory.peekStack();
+			fluid.dens = state.dens;
+			fluid.u = state.u;
+			fluid.v = state.v;
 		}
 		render();
+	}
+
+	public void addSensor(int x, int y) {
+		this.sensorOn = true;
+		this.sensorX = x;
+		this.sensorY = y;
+	}
+
+	public void removeSensor() {
+		this.sensorOn = false;
 	}
 }

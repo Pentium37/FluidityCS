@@ -33,8 +33,8 @@ public class SimulationController extends Controller implements MouseListener {
 	Canvas canvasX;
 
 	@FXML
-	private CheckBox sensorCheckbox;
-	private boolean sensorOn;
+	private Button addSensorButton;
+	private boolean sensorListeningOn;
 
 	@FXML
 	private CheckBox addDensityCheckbox;
@@ -105,6 +105,7 @@ public class SimulationController extends Controller implements MouseListener {
 		this.viscosity = 0;
 		this.diffusionRate = 0;
 		startRecordingButton.setDisable(true);
+		addSensorButton.setDisable(true);
 		sourceQueue = new Queue<>();
 
 		startAdd = Instant.now();
@@ -145,12 +146,6 @@ public class SimulationController extends Controller implements MouseListener {
 			}
 		});
 		addDensityCheckbox.addEventFilter(KeyEvent.KEY_TYPED, keyEvent -> {
-			if (keyEvent.getCode()
-					.isArrowKey() || keyEvent.getCode() == KeyCode.SPACE) {
-				keyEvent.consume();
-			}
-		});
-		sensorCheckbox.addEventFilter(KeyEvent.KEY_TYPED, keyEvent -> {
 			if (keyEvent.getCode()
 					.isArrowKey() || keyEvent.getCode() == KeyCode.SPACE) {
 				keyEvent.consume();
@@ -217,7 +212,12 @@ public class SimulationController extends Controller implements MouseListener {
 	@Override
 	@FXML
 	public void mousePressed(MouseEvent e) {
-		if (dragFluid) {
+		if (sensorListeningOn) {
+			sensorListeningOn = false;
+			addSensorButton.setText("Add Sensor");
+			simulation.addSensor((int) e.getX()/CELL_LENGTH, (int) e.getY()/CELL_LENGTH);
+			System.out.println("Sensor added at: " + (int) e.getX()/CELL_LENGTH + ", " + (int) e.getY()/CELL_LENGTH);
+		} else if (dragFluid && simulationStarted) {
 			previousCoords = new int[] { (int) e.getX(), (int) e.getY() };
 			mouseHeld = true;
 			startAdd = Instant.now();
@@ -227,7 +227,7 @@ public class SimulationController extends Controller implements MouseListener {
 	@Override
 	@FXML
 	public void mouseReleased() {
-		if (dragFluid) {
+		if (dragFluid && simulationStarted) {
 			mouseHeld = false;
 		}
 	}
@@ -235,7 +235,7 @@ public class SimulationController extends Controller implements MouseListener {
 	@Override
 	@FXML
 	public synchronized void mouseDragged(MouseEvent e) {
-		if (dragFluid) {
+		if (dragFluid && simulationStarted) {
 			double velocityX = 0;
 			double velocityY = 0;
 			double dragScalar = 5.0;
@@ -274,11 +274,6 @@ public class SimulationController extends Controller implements MouseListener {
 	}
 
 	@FXML
-	public void onSensorCheckBoxClick() {
-		sensorOn = sensorCheckbox.isSelected();
-	}
-
-	@FXML
 	public void onAddDensityCheckBoxClick() {
 		addDensity = addDensityCheckbox.isSelected();
 		if (addDensity) {
@@ -308,6 +303,17 @@ public class SimulationController extends Controller implements MouseListener {
 			startSimulation();
 		} else {
 			endSimulation();
+		}
+	}
+
+	@FXML
+	public void onAddSensorClick() {
+		if (addSensorButton.getText().equals("Add Sensor")) {
+			addSensorButton.setText("Click a fluid location!");
+			sensorListeningOn = true;
+		} else {
+			addSensorButton.setText("Add Sensor");
+			simulation.removeSensor();
 		}
 	}
 
@@ -449,6 +455,7 @@ public class SimulationController extends Controller implements MouseListener {
 		viscositySlider.setDisable(true);
 		diffusionRateSlider.setDisable(true);
 		startRecordingButton.setDisable(false);
+		addSensorButton.setDisable(false);
 		simulationFuture = EXECUTOR.submit(simulation);
 		startSimulationButton.setText("Pause Simulation");
 		simulationStarted = true;
@@ -530,7 +537,7 @@ public class SimulationController extends Controller implements MouseListener {
 			} else if (keyBindMap.get(keyEvent.getCode()) == FluidUIAction.PRIMARY_STEP_FORWARD
 					|| keyBindMap.get(keyEvent.getCode()) == FluidUIAction.SECONDARY_STEP_FORWARD) {
 				if (savingEnabled && !simulationStarted) {
-					simulation.step();
+					simulation.retrieveRollback();
 				}
 			}
 		}

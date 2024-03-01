@@ -43,7 +43,7 @@ public class Queue<T> {
 		return data;
 	}
 
-	public T peek() {
+	public T peekQueue() {
 		if (size == 0) {
 			throw new NoSuchElementException();
 		}
