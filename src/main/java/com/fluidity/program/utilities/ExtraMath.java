@@ -10,4 +10,9 @@ public class ExtraMath {
 		// Using Math.round() to round the number to two decimal places
 		return Math.round(number * 100.0) / 100.0;
 	}
+
+	public static double roundToFourDecimalPlaces(double number) {
+		// Using Math.round() to round the number to four decimal places
+		return Math.round(number * 10000.0) / 10000.0;
+	}
 }

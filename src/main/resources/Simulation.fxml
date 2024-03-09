@@ -19,7 +19,7 @@
             <children>
                 <BorderPane prefHeight="700.0" prefWidth="1000.0">
                     <center>
-                        <Canvas fx:id="canvasX" height="480.0" onMouseDragged="#mouseDragged" onMousePressed="#mousePressed" onMouseReleased="#mouseReleased" width="720.0" BorderPane.alignment="CENTER" />
+                        <Canvas fx:id="canvas" height="480.0" onMouseDragged="#mouseDragged" onMousePressed="#mousePressed" onMouseReleased="#mouseReleased" width="720.0" BorderPane.alignment="CENTER" />
                     </center>
                 </BorderPane>
                 <VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="250.0" styleClass="simulation-container">
@@ -43,9 +43,10 @@
                                 <HBox alignment="TOP_CENTER" prefHeight="28.0" prefWidth="238.0" spacing="10.0" styleClass="small-text">
                                     <children>
                                         <Label styleClass="small-text" text="Container Type:">
-                                 <HBox.margin>
-                                    <Insets top="5.0" />
-                                 </HBox.margin></Label>
+                                            <HBox.margin>
+                                                <Insets top="5.0" />
+                                            </HBox.margin>
+                                        </Label>
                                         <ChoiceBox fx:id="containerType" prefWidth="110.0">
                                             <items>
                                                 <FXCollections fx:factory="observableArrayList">
@@ -59,9 +60,10 @@
                                 <HBox alignment="TOP_CENTER" prefHeight="28.0" prefWidth="238.0" spacing="10.0" styleClass="small-text">
                                     <children>
                                         <Label styleClass="small-text" text="Plot Choice:">
-                                 <HBox.margin>
-                                    <Insets right="22.0" top="5.0" />
-                                 </HBox.margin></Label>
+                                            <HBox.margin>
+                                                <Insets right="22.0" top="5.0" />
+                                            </HBox.margin>
+                                        </Label>
                                         <ChoiceBox fx:id="plotChoice" prefWidth="110.0">
                                             <items>
                                                 <FXCollections fx:factory="observableArrayList">
@@ -76,9 +78,10 @@
                                 <HBox alignment="TOP_CENTER" prefHeight="28.0" prefWidth="238.0" spacing="10.0" styleClass="small-text">
                                     <children>
                                         <Label styleClass="small-text" text="Mouse Action:">
-                                 <HBox.margin>
-                                    <Insets right="15.0" top="5.0" />
-                                 </HBox.margin></Label>
+                                            <HBox.margin>
+                                                <Insets right="15.0" top="5.0" />
+                                            </HBox.margin>
+                                        </Label>
                                         <ChoiceBox fx:id="mouseAction" prefWidth="110.0">
                                             <items>
                                                 <FXCollections fx:factory="observableArrayList">
@@ -90,54 +93,89 @@
                                         </ChoiceBox>
                                     </children>
                                 </HBox>
-                        <HBox alignment="CENTER" layoutX="11.0" layoutY="182.0" prefHeight="28.0" prefWidth="238.0" spacing="10.0" styleClass="small-text">
-                           <children>
-                              <CheckBox fx:id="addDensityCheckbox" alignment="CENTER" mnemonicParsing="false" onAction="#onAddDensityCheckBoxClick" styleClass="small-text" text="Add density">
-                                 <padding>
-                                    <Insets left="10.0" />
-                                 </padding>
-                              </CheckBox>
-                              <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
-                                 <children>
-                                    <Label fx:id="densityLabel" alignment="CENTER" contentDisplay="CENTER" styleClass="small-text" text="Density" />
-                                    <Slider fx:id="densitySlider" majorTickUnit="5.0" max="10.0" minorTickCount="1" showTickLabels="true" showTickMarks="true" />
-                                 </children>
-                              </VBox>
-                           </children>
-                        </HBox>
-                        <HBox alignment="CENTER" layoutX="11.0" layoutY="210.0" prefHeight="28.0" prefWidth="238.0" spacing="10.0" styleClass="small-text">
-                           <children>
-                              <Button fx:id="addSensorButton" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#onAddSensorClick" prefWidth="220.0" text="Add Sensor" textAlignment="CENTER">
-                                 <font>
-                                    <Font size="11.0" />
-                                 </font></Button>
-                           </children>
-                           <VBox.margin>
-                              <Insets bottom="15.0" />
-                           </VBox.margin>
-                        </HBox>
-                        <Button fx:id="startRecordingButton" mnemonicParsing="false" onAction="#onStartRecordingClick" prefHeight="10.0" prefWidth="120.0" text="Start Recording" textAlignment="CENTER">
-                           <font>
-                              <Font size="11.0" />
-                           </font>
-                           <VBox.margin>
-                              <Insets bottom="10.0" />
-                           </VBox.margin>
-                        </Button>
+                                <HBox alignment="CENTER" layoutX="11.0" layoutY="182.0" prefHeight="28.0" prefWidth="238.0" spacing="10.0" styleClass="small-text">
+                                    <children>
+                                        <CheckBox fx:id="addDensityCheckbox" alignment="CENTER" mnemonicParsing="false" onAction="#onAddDensityCheckBoxClick" styleClass="small-text" text="Add density">
+                                            <padding>
+                                                <Insets left="10.0" />
+                                            </padding>
+                                        </CheckBox>
+                                        <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
+                                            <children>
+                                                <Label fx:id="densityLabel" alignment="CENTER" contentDisplay="CENTER" styleClass="small-text" text="Density" />
+                                                <Slider fx:id="densitySlider" majorTickUnit="5.0" max="10.0" minorTickCount="1" showTickLabels="true" showTickMarks="true" />
+                                            </children>
+                                        </VBox>
+                                    </children>
+                                </HBox>
+                                <HBox alignment="CENTER" layoutX="11.0" layoutY="210.0" prefHeight="28.0" prefWidth="238.0" spacing="10.0" styleClass="small-text">
+                                    <children>
+                                        <Button fx:id="addSensorButton" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#onAddSensorClick" prefWidth="220.0" text="Add Sensor" textAlignment="CENTER">
+                                            <font>
+                                                <Font size="11.0" />
+                                            </font>
+                                        </Button>
+                                    </children>
+                                    <VBox.margin>
+                                        <Insets bottom="15.0" />
+                                    </VBox.margin>
+                                </HBox>
+                                <Button fx:id="startRecordingButton" mnemonicParsing="false" onAction="#onStartRecordingClick" prefHeight="10.0" prefWidth="120.0" text="Start Recording" textAlignment="CENTER">
+                                    <font>
+                                        <Font size="11.0" />
+                                    </font>
+                                    <VBox.margin>
+                                        <Insets bottom="10.0" />
+                                    </VBox.margin>
+                                </Button>
                                 <Button fx:id="startSimulationButton" mnemonicParsing="false" onAction="#onStartSimulationClick" prefHeight="10.0" prefWidth="120.0" text="Start Simulation" textAlignment="CENTER">
-                           <font>
-                              <Font size="11.0" />
-                           </font>
-                           <VBox.margin>
-                              <Insets bottom="10.0" />
-                           </VBox.margin>
-                        </Button>
+                                    <font>
+                                        <Font size="11.0" />
+                                    </font>
+                                    <VBox.margin>
+                                        <Insets bottom="10.0" />
+                                    </VBox.margin>
+                                </Button>
                             </children>
                         </VBox>
                         <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="234.0" prefWidth="240.0" styleClass="simulation-container, parameter-container">
                             <VBox.margin>
                                 <Insets bottom="10.0" />
                             </VBox.margin>
+                            <children>
+                                <VBox alignment="CENTER" layoutX="-3.0" prefHeight="234.0" prefWidth="240.0">
+                                    <children>
+                                        <Label contentDisplay="CENTER" prefWidth="228.0" styleClass="small-text" text="Sensor Data">
+                                 <font>
+                                    <Font size="13.0" />
+                                 </font>
+                                        </Label>
+                                        <Label fx:id="sensorLocationLabel" contentDisplay="CENTER" layoutX="30.0" layoutY="119.0" prefWidth="228.0" styleClass="small-text" text="Sensor Location: Not Set">
+                                 <font>
+                                    <Font size="13.0" />
+                                 </font>
+                                        </Label>
+                                        <Label fx:id="sensorDensityLabel" contentDisplay="CENTER" layoutX="30.0" layoutY="127.0" prefWidth="228.0" styleClass="small-text" text="Density:">
+                                 <font>
+                                    <Font size="13.0" />
+                                 </font>
+                                        </Label>
+                                        <Label fx:id="sensorHorizontalVelocityLabel" contentDisplay="CENTER" layoutX="30.0" layoutY="140.0" prefWidth="228.0" styleClass="small-text" text="Horizontal Velocity:">
+                                 <font>
+                                    <Font size="13.0" />
+                                 </font>
+                                        </Label>
+                                        <Label fx:id="sensorVerticalVelocityLabel" contentDisplay="CENTER" layoutX="30.0" layoutY="153.0" prefWidth="228.0" styleClass="small-text" text="Vertical Velocity:">
+                                 <font>
+                                    <Font size="13.0" />
+                                 </font>
+                                        </Label>
+                                    </children>
+                           <padding>
+                              <Insets left="3.0" />
+                           </padding>
+                                </VBox>
+                            </children>
                         </Pane>
                         <Button maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onGoToSettingsClick" prefHeight="20.0" prefWidth="240.0" styleClass="menu-button" text="Settings">
                             <VBox.margin>

@@ -4,11 +4,11 @@ package com.fluidity.program.simulation;
  * @author Yalesan Thayalan {@literal <yalesan2006@outlook.com>}
  */
 public class FluidState {
-	public double[] dens, u, v; // change to horizontal, vertical and density
+	public double[] density, horizontalVelocity, verticalVeloctiy; // change to horizontal, vertical and density
 
-	public FluidState(double[] dens, double[] u, double[] v) {
-		this.dens = dens;
-		this.u = u;
-		this.v = v;
+	public FluidState(double[] density, double[] horizontalVelocity, double[] verticalVelocity) {
+		this.density = density;
+		this.horizontalVelocity = horizontalVelocity;
+		this.verticalVeloctiy = verticalVelocity;
 	}
 }
