@@ -28,7 +28,7 @@ public abstract class Fluid {
 		horizontalVelocity = new double[size];
 		verticalVelocity = new double[size];
 
-		for (int i = 0; i < WIDTH; i++) {
+		for (int i = 0; i < WIDTH; i++) {//
 			for (int j = 0; j < HEIGHT; j++) {
 				barrierPresent[i][j] = false;
 			}
@@ -157,7 +157,7 @@ public abstract class Fluid {
 		setBoundary(2, v);
 	}
 
-	private void gaussSeidel(int b, double[] destination, double[] source, double a, double factor) {
+	public void gaussSeidel(int b, double[] destination, double[] source, double a, double factor) {
 		// iterate through the grid and update the destination array using the source array
 		for (int k = 0; k < ITERATIONS; k++) {
 			for (int i = 1; i < WIDTH + 1; i++) {
@@ -188,44 +188,52 @@ public abstract class Fluid {
 		return (i + j * (WIDTH + 2));
 	}
 
-	abstract void setBoundary(int b, double[] destination);
-
-	abstract void conditions();
-	public void setBarriers(final int b, final double[] destination) {
+	public void setBarriers(final int fieldType, final double[] destinationGrid) {
 		// Loop over every cell in the grid
-		for (int i = 0; i < WIDTH; i++) {
-			for (int j = 0; j < HEIGHT; j++) {
+		for (int y = 0; y < HEIGHT; y++) {
+			for (int x = 0; x < WIDTH; x++) {
 				// Check if the current cell is a barrier
-				if (barrierPresent[i][j]) {
+				if (barrierPresent[x][y]) {
 					// Depending on the field type (velocity or density), apply different treatments
-					if (b == 0) { // Density
+					if (fieldType == 0) { // Density
 						// For density, attempt to "borrow" the density from neighboring non-barrier cells
 						// This is a simplistic way to avoid density artifacts at barrier edges
-						double avgDensity = 0;
+						double averageProperty = 0;
 						int validNeighbors = 0;
-						for (int di = -1; di <= 1; di++) {
-							for (int dj = -1; dj <= 1; dj++) {
-								if (di == 0 && dj == 0) continue; // Skip the barrier cell itself
-								int ni = i + di;
-								int nj = j + dj;
-								if (ni >= 0 && ni < WIDTH && nj >= 0 && nj < HEIGHT && !barrierPresent[ni][nj]) {
-									avgDensity += destination[index(ni + 1, nj + 1)];
+
+						// Iterate through each neighboring cell surrounding the current cell (x, y)
+						for (int dx = -1; dx <= 1; dx++) {
+							for (int dy = -1; dy <= 1; dy++) {
+								// Skip the current cell itself
+								if (dx == 0 && dy == 0) continue;
+
+								// Calculate the coordinates of the neighboring cell
+								int neighborX = x + dx;
+								int neighborY = y + dy;
+
+								// Check if the neighboring cell is within the bounds of the grid and not a barrier cell
+								if (neighborX >= 0 && neighborX < WIDTH && neighborY >= 0 && neighborY < HEIGHT && !barrierPresent[neighborX][neighborY]) {
+									// Add the density of the neighboring cell to the average density
+									averageProperty += destinationGrid[index(neighborX + 1, neighborY + 1)];
 									validNeighbors++;
 								}
 							}
 						}
+
+						// Calculate a mean value for the property
 						if (validNeighbors > 0) {
-							destination[index(i + 1, j + 1)] = avgDensity / validNeighbors;
+							destinationGrid[index(x + 1, y + 1)] = averageProperty / validNeighbors;
 						}
-					} else if (b == 1) { // Horizontal velocity component
-						// Set horizontal velocity to zero at barrier edges
-						destination[index(i + 1, j + 1)] = 0.0;
-					} else if (b == 2) { // Vertical velocity component
-						// Set vertical velocity to zero at barrier edges
-						destination[index(i + 1, j + 1)] = 0.0;
+					} else if (fieldType == 1 || fieldType == 2) { // Horizontal or Vertical velocity component
+						// Set velocity to zero at barrier edges
+						destinationGrid[index(x + 1, y + 1)] = 0.0;
 					}
 				}
 			}
 		}
 	}
+
+	abstract void setBoundary(int b, double[] destination);
+
+	abstract void conditions();
 }

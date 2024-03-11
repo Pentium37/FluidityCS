@@ -19,11 +19,6 @@ public class MainMenuController extends Controller {
 	}
 
 	@FXML
-	public void onViewRecordingsButtonClick() {
-		manager.loadScene(ProgramState.RECORDINGS);
-	}
-
-	@FXML
 	public void onSettingsButtonClick() {
 		manager.loadScene(ProgramState.SETTINGS);
 	}

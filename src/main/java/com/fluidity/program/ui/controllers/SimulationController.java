@@ -2,7 +2,6 @@ package com.fluidity.program.ui.controllers;
 
 import com.fluidity.program.simulation.FluidInput;
 import com.fluidity.program.simulation.Simulation;
-import com.fluidity.program.simulation.fluid.Fluid;
 import com.fluidity.program.ui.FluidUIAction;
 import com.fluidity.program.ui.MouseListener;
 import com.fluidity.program.ui.ProgramState;
@@ -90,12 +89,13 @@ public class SimulationController extends Controller implements MouseListener {
 	private int FPS;
 
 	@FXML
-	private Button startRecordingButton;
-	private boolean recordingStarted;
-	private Queue<Queue<FluidInput>> recordingQueue;
-	private String initialFluidStateOutput;
+	private Button clearBarriersButton;
 
 	private Map<KeyCode, FluidUIAction> keyBindMap;
+	@FXML
+	private Button rollback;
+	@FXML
+	private Button stepForward;
 
 	@FXML
 	AnchorPane simulationPane;
@@ -111,12 +111,11 @@ public class SimulationController extends Controller implements MouseListener {
 		setEventFilters();
 		this.viscosity = 0;
 		this.diffusionRate = 0;
-		startRecordingButton.setDisable(true);
+		clearBarriersButton.setDisable(true);
 		addSensorButton.setDisable(true);
 		sourceQueue = new Queue<>();
 
 		startAdd = Instant.now();
-		recordingStarted = false;
 
 		int IMAGE_WIDTH = 720;
 		int IMAGE_HEIGHT = 480;
@@ -129,6 +128,8 @@ public class SimulationController extends Controller implements MouseListener {
 		viscositySlider.setDisable(true);
 		diffusionRateSlider.setDisable(true);
 		densitySlider.setDisable(true);
+		rollback.setDisable(true);
+		stepForward.setDisable(true);
 
 		createListeners();
 		simulationStarted = false;
@@ -148,7 +149,7 @@ public class SimulationController extends Controller implements MouseListener {
 				keyEvent.consume();
 			}
 		});
-		startRecordingButton.addEventFilter(KeyEvent.KEY_TYPED, keyEvent -> {
+		clearBarriersButton.addEventFilter(KeyEvent.KEY_TYPED, keyEvent -> {
 			if (keyEvent.getCode()
 					.isArrowKey() || keyEvent.getCode() == KeyCode.SPACE) {
 				keyEvent.consume();
@@ -184,165 +185,6 @@ public class SimulationController extends Controller implements MouseListener {
 				keyEvent.consume();
 			}
 		});
-	}
-
-	private void loadConfigurations() {
-		List<String> configurations = FileHandler.readFile(SettingsController.configPath);
-		for (String line : configurations) {
-
-			String[] configuration = line.split(":", 2);
-			if (configuration[1].equals("null")) {
-				continue;
-			}
-
-			try {
-				FluidUIAction action = FluidUIAction.getByPath(configuration[0]);
-				keyBindMap.put(KeyCode.getKeyCode(configuration[1]), action);
-			} catch (IllegalArgumentException e) {
-				switch (configuration[0]) {
-					case "saving" -> {
-						savingEnabled = configuration[1].equals("true");
-					}
-					case "FPS" -> {
-						FPS = Integer.parseInt(configuration[1]);
-					}
-					case "iterations" -> {
-						ITERATIONS = Integer.parseInt(configuration[1]);
-					}
-					case "cell-size" -> {
-						String[] split = configuration[1].split(",");
-						CELL_LENGTH = Integer.parseInt(split[0]);
-					}
-				}
-			}
-		}
-	}
-
-	@Override
-	@FXML
-	public void mousePressed(MouseEvent e) {
-		if (sensorListeningOn) {
-			sensorListeningOn = false;
-			addSensorButton.setText("Clear Sensor");
-			simulation.addSensor((int) e.getX() / CELL_LENGTH, (int) e.getY() / CELL_LENGTH);
-			System.out.println(
-					"Sensor added at: " + (int) e.getX() / CELL_LENGTH + ", " + (int) e.getY() / CELL_LENGTH);
-		} else if (dragFluid && simulationStarted) {
-			previousCoords = new int[] { (int) e.getX(), (int) e.getY() };
-			mouseHeld = true;
-			startAdd = Instant.now();
-		} else if (addBarrier && simulation.initialised) {
-			simulation.addBarrier((int) e.getX() / CELL_LENGTH, (int) e.getY() / CELL_LENGTH);
-		} else if (removeBarrier && simulation.initialised) {
-			simulation.removeBarrier((int) e.getX() / CELL_LENGTH, (int) e.getY() / CELL_LENGTH);
-		}
-	}
-
-	@Override
-	@FXML
-	public void mouseReleased() {
-		if (dragFluid && simulationStarted) {
-			mouseHeld = false;
-		}
-	}
-
-	@Override
-	@FXML
-	public synchronized void mouseDragged(MouseEvent e) {
-		if (dragFluid && simulationStarted) {
-			double velocityX = 0;
-			double velocityY = 0;
-			double dragScalar = 2.0;
-
-			if (previousCoords != null) {
-				velocityX = dragScalar * ((int) e.getX() - previousCoords[0]);
-				velocityY = dragScalar * ((int) e.getY() - previousCoords[1]);
-			}
-
-			startAdd = Instant.now();
-			previousCoords = new int[] { (int) e.getX(), (int) e.getY() };
-			sourceQueue.enqueue(
-					new FluidInput(previousCoords[0] / CELL_LENGTH, previousCoords[1] / CELL_LENGTH, velocityX,
-							velocityY, densityFactor * hypot(velocityX, velocityY)));
-		}
-	}
-
-	@Override
-	public synchronized void consumeSources(Consumer<FluidInput> sourceConsumer) {
-		if (mouseHeld) {
-			long timeHeld = Duration.between(startAdd, Instant.now())
-					.toMillis();
-			startAdd = Instant.now();
-			sourceQueue.enqueue(new FluidInput(previousCoords[0] / CELL_LENGTH, previousCoords[1] / CELL_LENGTH, 0, 0,
-					timeHeld * densityFactor * (20.0 / 6)));
-		}
-
-		if (recordingStarted) {
-			recordingQueue.enqueue(sourceQueue.copy());
-		}
-
-		while (!sourceQueue.isEmpty()) {
-			FluidInput inputSource = sourceQueue.dequeue();
-			sourceConsumer.accept(inputSource);
-		}
-	}
-
-	@FXML
-	public void onAddDensityCheckBoxClick() {
-		addDensity = addDensityCheckbox.isSelected();
-		if (addDensity) {
-			densitySlider.setDisable(false);
-			densityFactor = densitySlider.getValue();
-		} else {
-			densitySlider.setDisable(true);
-			densityFactor = 0;
-		}
-	}
-
-	// slap in some text boxes for the number quantities
-	@FXML
-	public void onReturnToHomeButtonClick() {
-		manager.loadScene(ProgramState.MAIN_MENU);
-	}
-
-	@FXML
-	private void onGoToSettingsClick() {
-		endSimulation();
-		manager.loadScene(ProgramState.SETTINGS);
-	}
-
-	@FXML
-	private void onStartSimulationClick() {
-		if (!simulationStarted) {
-			startSimulation();
-		} else {
-			endSimulation();
-		}
-	}
-
-	@FXML
-	public void onAddSensorClick() {
-		if (addSensorButton.getText()
-				.equals("Add Sensor")) {
-			addSensorButton.setText("Click a fluid location!");
-			sensorListeningOn = true;
-		} else {
-			addSensorButton.setText("Add Sensor");
-			simulation.removeSensor();
-		}
-	}
-
-	@FXML
-	private void onStartRecordingClick() {
-		if (!recordingStarted) {
-			initialiseRecording();
-			recordingStarted = true;
-			startRecordingButton.setText("Stop Recording");
-		} else {
-			recordingStarted = false;
-			startRecordingButton.setText("Start Recording");
-			saveRecordingsToFile();
-		}
 	}
 
 	private void createListeners() {
@@ -459,6 +301,103 @@ public class SimulationController extends Controller implements MouseListener {
 				.select(0);
 	}
 
+	private void loadConfigurations() {
+		List<String> configurations = FileHandler.readFile(SettingsController.configPath);
+		for (String line : configurations) {
+
+			String[] configuration = line.split(":", 2);
+			if (configuration[1].equals("null")) {
+				continue;
+			}
+
+			try {
+				FluidUIAction action = FluidUIAction.getByPath(configuration[0]);
+				keyBindMap.put(KeyCode.getKeyCode(configuration[1]), action);
+			} catch (IllegalArgumentException e) {
+				switch (configuration[0]) {
+					case "saving" -> {
+						savingEnabled = configuration[1].equals("true");
+					}
+					case "FPS" -> {
+						FPS = Integer.parseInt(configuration[1]);
+					}
+					case "iterations" -> {
+						ITERATIONS = Integer.parseInt(configuration[1]);
+					}
+					case "cell-size" -> {
+						String[] split = configuration[1].split(",");
+						CELL_LENGTH = Integer.parseInt(split[0]);
+					}
+				}
+			}
+		}
+	}
+
+	@Override
+	@FXML
+	public void mousePressed(MouseEvent e) {
+		if (sensorListeningOn) {
+			sensorListeningOn = false;
+			addSensorButton.setText("Clear Sensor");
+			simulation.addSensor((int) e.getX() / CELL_LENGTH, (int) e.getY() / CELL_LENGTH);
+			System.out.println(
+					"Sensor added at: " + (int) e.getX() / CELL_LENGTH + ", " + (int) e.getY() / CELL_LENGTH);
+		} else if (dragFluid && simulationStarted) {
+			previousCoords = new int[] { (int) e.getX(), (int) e.getY() };
+			mouseHeld = true;
+			startAdd = Instant.now();
+		} else if (addBarrier && simulation.initialised) {
+			simulation.addBarrier((int) e.getX() / CELL_LENGTH, (int) e.getY() / CELL_LENGTH);
+		} else if (removeBarrier && simulation.initialised) {
+			simulation.removeBarrier((int) e.getX() / CELL_LENGTH, (int) e.getY() / CELL_LENGTH);
+		}
+	}
+
+	@Override
+	@FXML
+	public void mouseReleased() {
+		if (dragFluid && simulationStarted) {
+			mouseHeld = false;
+		}
+	}
+
+	@Override
+	@FXML
+	public synchronized void mouseDragged(MouseEvent e) {
+		if (dragFluid && simulationStarted) {
+			double velocityX = 0;
+			double velocityY = 0;
+			double dragScalar = 2.0;
+
+			if (previousCoords != null) {
+				velocityX = dragScalar * ((int) e.getX() - previousCoords[0]);
+				velocityY = dragScalar * ((int) e.getY() - previousCoords[1]);
+			}
+
+			startAdd = Instant.now();
+			previousCoords = new int[] { (int) e.getX(), (int) e.getY() };
+			sourceQueue.enqueue(
+					new FluidInput(previousCoords[0] / CELL_LENGTH, previousCoords[1] / CELL_LENGTH, velocityX,
+							velocityY, densityFactor * hypot(velocityX, velocityY)));
+		}
+	}
+
+	@Override
+	public synchronized void consumeSources(Consumer<FluidInput> sourceConsumer) {
+		if (mouseHeld) {
+			long timeHeld = Duration.between(startAdd, Instant.now())
+					.toMillis();
+			startAdd = Instant.now();
+			sourceQueue.enqueue(new FluidInput(previousCoords[0] / CELL_LENGTH, previousCoords[1] / CELL_LENGTH, 0, 0,
+					timeHeld * densityFactor * (20.0 / 6)));
+		}
+
+		while (!sourceQueue.isEmpty()) {
+			FluidInput inputSource = sourceQueue.dequeue();
+			sourceConsumer.accept(inputSource);
+		}
+	}
+
 	public void validateInitialisation() {
 		if (!simulation.initialised) {
 			loadConfigurations();
@@ -469,8 +408,11 @@ public class SimulationController extends Controller implements MouseListener {
 	private void startSimulation() {
 		viscositySlider.setDisable(true);
 		diffusionRateSlider.setDisable(true);
-		startRecordingButton.setDisable(false);
+		clearBarriersButton.setDisable(false);
 		addSensorButton.setDisable(false);
+		rollback.setDisable(true);
+		stepForward.setDisable(true);
+
 		simulationFuture = EXECUTOR.submit(simulation);
 		startSimulationButton.setText("Pause Simulation");
 		simulationStarted = true;
@@ -479,60 +421,56 @@ public class SimulationController extends Controller implements MouseListener {
 	private void endSimulation() {
 		viscositySlider.setDisable(false);
 		diffusionRateSlider.setDisable(false);
-		startRecordingButton.setDisable(true);
+		clearBarriersButton.setDisable(true);
+		rollback.setDisable(false);
+		stepForward.setDisable(false);
+
 		simulationStarted = false;
-		if (recordingStarted) {
-			onStartRecordingClick();
-		}
 		simulationFuture.cancel(true);
 		startSimulationButton.setText("Start Simulation");
+	}
 
-		if (recordingStarted) {
-			saveRecordingsToFile();
+	@FXML
+	public void onAddDensityCheckBoxClick() {
+		addDensity = addDensityCheckbox.isSelected();
+		if (addDensity) {
+			densitySlider.setDisable(false);
+			densityFactor = densitySlider.getValue();
+		} else {
+			densitySlider.setDisable(true);
+			densityFactor = 0;
+		}
+	}
+	@FXML
+	public void onReturnToHomeButtonClick() {
+		manager.loadScene(ProgramState.MAIN_MENU);
+	}
+
+	@FXML
+	private void onGoToSettingsClick() {
+		endSimulation();
+		manager.loadScene(ProgramState.SETTINGS);
+	}
+
+	@FXML
+	private void onStartSimulationClick() {
+		if (!simulationStarted) {
+			startSimulation();
+		} else {
+			endSimulation();
 		}
 	}
 
-	private void saveRecordingsToFile() {
-		recordingStarted = false;
-
-		List<String> recordingInfo = FileHandler.readFile("recordings-info.txt");
-		StringBuilder recordingInfoOutput = new StringBuilder();
-		String recordingFileName = "recording-";
-		String propertiesFileName = "properties-";
-
-		boolean check = true;
-		for (int i = 0; i < recordingInfo.size(); i++) {
-
-			if (recordingInfo.get(i)
-					.equals("") && check) {
-				recordingFileName += i + ".txt";
-				propertiesFileName += i + ".txt";
-				recordingInfo.add(i, recordingFileName);
-				check = false;
-			}
-
-			recordingInfoOutput.append(recordingInfo.get(i))
-					.append("\n");
+	@FXML
+	public void onAddSensorClick() {
+		if (addSensorButton.getText()
+				.equals("Add Sensor")) {
+			addSensorButton.setText("Click a fluid location!");
+			sensorListeningOn = true;
+		} else {
+			addSensorButton.setText("Add Sensor");
+			simulation.removeSensor();
 		}
-
-		FileHandler.writeLine("recordings-info.txt", recordingInfoOutput.toString());
-		FileHandler.writeLine(recordingFileName, recordingQueue.toString());
-		FileHandler.writeLine(propertiesFileName, initialFluidStateOutput);
-	}
-
-	private void initialiseRecording() {
-		recordingQueue = new Queue<>();
-		recordingStarted = true;
-		createOutputForInitialFluidState();
-		recordingQueue.setMAX_SIZE(10800); // 3 minutes of recording at 60 FPS
-	}
-
-	private void createOutputForInitialFluidState() {
-		Fluid fluid = simulation.getFluid();
-		//Add fluid type soon
-		initialFluidStateOutput =
-				Arrays.toString(fluid.density) + "\n" + Arrays.toString(fluid.horizontalVelocity) + "\n"
-						+ Arrays.toString(fluid.verticalVelocity);
 	}
 
 	@FXML
@@ -557,5 +495,24 @@ public class SimulationController extends Controller implements MouseListener {
 				}
 			}
 		}
+	}
+
+	@FXML
+	public void onStepForwardClick() {
+		if (savingEnabled && !simulationStarted) {
+			simulation.stepForward();
+		}
+	}
+
+	@FXML
+	public void onRollbackClick() {
+		if (savingEnabled && !simulationStarted) {
+			simulation.rollback();
+		}
+	}
+
+	@FXML
+	public void onClearBarriersClick() {
+		simulation.clearBarriers();
 	}
 }

@@ -6,37 +6,45 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="720.0" prefWidth="1280.0" styleClass="main-theme" xmlns="http://javafx.com/javafx/17.0.2-ea"
-            xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.fluidity.program.ui.controllers.AboutController">
+<AnchorPane prefHeight="720.0" prefWidth="1280.0" styleClass="main-theme" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.fluidity.program.ui.controllers.AboutController">
 
     <stylesheets>
-        <URL value="@styles.css"/>
+        <URL value="@styles.css" />
     </stylesheets>
     <children>
-        <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-                    prefHeight="720.0" prefWidth="1280.0">
+        <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0">
             <top>
                 <Label styleClass="heading-label" text="About" BorderPane.alignment="CENTER">
                     <font>
-                        <Font size="54.0"/>
+                        <Font size="54.0" />
                     </font>
                     <BorderPane.margin>
-                        <Insets top="25.0"/>
+                        <Insets top="25.0" />
                     </BorderPane.margin>
                 </Label>
             </top>
             <bottom>
-                <Button onAction="#onReturnToHomeButtonClick" styleClass="return-button, menu-button"
-                        mnemonicParsing="false" prefHeight="40.0" prefWidth="140.0" text="Return To Home"
-                        BorderPane.alignment="BOTTOM_RIGHT">
+                <Button mnemonicParsing="false" onAction="#onReturnToHomeButtonClick" prefHeight="40.0" prefWidth="140.0" styleClass="return-button, menu-button" text="Return To Home" BorderPane.alignment="BOTTOM_RIGHT">
                     <BorderPane.margin>
-                        <Insets bottom="40.0" right="40.0"/>
+                        <Insets bottom="40.0" right="40.0" />
                     </BorderPane.margin>
                 </Button>
             </bottom>
             <center>
-                <VBox styleClass="container" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
-                      minWidth="-Infinity" prefHeight="510.0" prefWidth="951.0" BorderPane.alignment="CENTER"/>
+                <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="510.0" prefWidth="951.0" styleClass="container" BorderPane.alignment="CENTER">
+               <children>
+                  <VBox prefHeight="510.0" prefWidth="951.0">
+                     <children>
+                        <Label prefHeight="120.0" prefWidth="929.0" styleClass="small-text" text="Our fluid simulation implementation offers a captivating journey into the mesmerizing world of computational fluid dynamics. Designed with meticulous attention to detail, our fluid simulation engine leverages advanced mathematical models to accurately replicate the complex behaviour of fluids in motion. From the graceful flow of water to the swirling dance of smoke, our simulation brings these phenomena to life with stunning realism. Behind the scenes, our dedicated team of developers has crafted an elegant solution, employing techniques such as Gauss-Seidel iteration and finite difference methods to ensure both accuracy and efficiency. Whether you're a seasoned researcher exploring the depths of fluid dynamics or an enthusiast seeking to experience the beauty of fluid motion first hand, our simulation provides an immersive and intuitive platform for experimentation and discovery. " textOverrun="CLIP" wrapText="true" />
+                        <Label layoutX="10.0" layoutY="10.0" prefHeight="123.0" prefWidth="929.0" styleClass="small-text" text="Employed within the fluid processing are a trio of fundamental processes: diffusion, advection, and projection, to accurately replicate the intricate behaviour of our fluid flow. The Gauss-Seidel method is the numerical technique behind all of this, used to provide a numerical solution to the system of equations governing fluid flow, (the Navier-Stokes equations). Specifically, it's employed to solve the pressure equation, which is crucial for maintaining incompressibility in fluid simulations. The method iteratively updates the pressure values of each grid cell based on the pressure values of neighbouring cells. It starts with an initial guess for the pressure distribution across the grid. Then, in each iteration, it updates the pressure of each cell by taking a weighted average of its neighbouring pressure values. This iterative process continues until the pressure values converge to a stable solution." textOverrun="CLIP" wrapText="true">
+                           <VBox.margin>
+                              <Insets top="20.0" />
+                           </VBox.margin></Label>
+                        <Label layoutX="10.0" layoutY="10.0" prefHeight="107.0" prefWidth="929.0" styleClass="small-text" text="By altering the cell length, you can refine the spatial resolution of the simulation, balancing computational efficiency with visuals. Modifying FPS ensures a smooth and responsive simulation experience, while adjusting the number of iterations allows users to trade off between simulation speed and numerical accuracy. It's important to note that increasing the number of iterations enhances the simulation's accuracy but may impact its performance." textOverrun="CLIP" wrapText="true" />
+                        <Label layoutX="10.0" layoutY="10.0" prefHeight="120.0" prefWidth="929.0" styleClass="small-text" text="The simulation also provides advanced simulation control features such as fluid saving and rollbacks. With fluid saving, users can pause the simulation at any point and save its current state, allowing them to revisit and analyse previous states or undo actions if needed. The rollback feature enables users to rewind the simulation to a previous state within a short-term memory window, providing flexibility for experimentation and error correction. Furthermore, users can step forward through the simulation at their preferred pace, allowing them to observe fluid dynamics in detail or process the simulation slower for closer analysis. Keybinds for these processes can be set within the settings page. (Return home to see)" textOverrun="CLIP" wrapText="true" />
+                     </children>
+                  </VBox>
+               </children></VBox>
             </center>
         </BorderPane>
     </children>

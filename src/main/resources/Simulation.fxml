@@ -108,34 +108,36 @@
                                         </VBox>
                                     </children>
                                 </HBox>
+                                <Button fx:id="clearBarriersButton" mnemonicParsing="false" onAction="#onClearBarriersClick" prefWidth="220.0" text="Clear Barriers" textAlignment="CENTER">
+                                    <font>
+                                        <Font size="11.0" />
+                                    </font>
+                           <VBox.margin>
+                              <Insets bottom="15.0" />
+                           </VBox.margin>
+                                </Button>
+                                  <Button fx:id="addSensorButton" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#onAddSensorClick" prefWidth="220.0" text="Add Sensor" textAlignment="CENTER">
+                                      <font>
+                                          <Font size="11.0" />
+                                      </font>
+                           <VBox.margin>
+                              <Insets bottom="15.0" />
+                           </VBox.margin>
+                                  </Button>
                                 <HBox alignment="CENTER" layoutX="11.0" layoutY="210.0" prefHeight="28.0" prefWidth="238.0" spacing="10.0" styleClass="small-text">
-                                    <children>
-                                        <Button fx:id="addSensorButton" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#onAddSensorClick" prefWidth="220.0" text="Add Sensor" textAlignment="CENTER">
-                                            <font>
-                                                <Font size="11.0" />
-                                            </font>
-                                        </Button>
-                                    </children>
                                     <VBox.margin>
                                         <Insets bottom="15.0" />
                                     </VBox.margin>
+                           <children>
+                              <Button fx:id="rollback" mnemonicParsing="false" onAction="#onRollbackClick" text="&lt;" />
+                                      <Button fx:id="startSimulationButton" mnemonicParsing="false" onAction="#onStartSimulationClick" prefHeight="10.0" prefWidth="120.0" text="Start Simulation" textAlignment="CENTER">
+                                          <font>
+                                              <Font size="11.0" />
+                                          </font>
+                                      </Button>
+                              <Button fx:id="stepForward" mnemonicParsing="false" onAction="#onStepForwardClick" text="&gt;" />
+                           </children>
                                 </HBox>
-                                <Button fx:id="startRecordingButton" mnemonicParsing="false" onAction="#onStartRecordingClick" prefHeight="10.0" prefWidth="120.0" text="Start Recording" textAlignment="CENTER">
-                                    <font>
-                                        <Font size="11.0" />
-                                    </font>
-                                    <VBox.margin>
-                                        <Insets bottom="10.0" />
-                                    </VBox.margin>
-                                </Button>
-                                <Button fx:id="startSimulationButton" mnemonicParsing="false" onAction="#onStartSimulationClick" prefHeight="10.0" prefWidth="120.0" text="Start Simulation" textAlignment="CENTER">
-                                    <font>
-                                        <Font size="11.0" />
-                                    </font>
-                                    <VBox.margin>
-                                        <Insets bottom="10.0" />
-                                    </VBox.margin>
-                                </Button>
                             </children>
                         </VBox>
                         <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="234.0" prefWidth="240.0" styleClass="simulation-container, parameter-container">

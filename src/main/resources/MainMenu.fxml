@@ -4,21 +4,18 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox alignment="CENTER" spacing="5.0" styleClass="main-theme" xmlns="http://javafx.com/javafx/17.0.2-ea"
-      xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.fluidity.program.ui.controllers.MainMenuController">
+<VBox alignment="CENTER" spacing="5.0" styleClass="main-theme" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.fluidity.program.ui.controllers.MainMenuController">
     <stylesheets>
-        <URL value="@styles.css"/>
+        <URL value="@styles.css" />
     </stylesheets>
 
     <children>
-        <Label fx:id="mainMenuLabel" styleClass="title" text="Fluidity"/>
+        <Label fx:id="mainMenuLabel" styleClass="title" text="Fluidity" />
 
-        <Button onAction="#onStartSimulationButtonClick" styleClass="menu-button, small-button"
-                text="Start Simulation"/>
-        <Button onAction="#onViewRecordingsButtonClick" styleClass="menu-button, small-button" text="View Recordings"/>
-        <Button onAction="#onSettingsButtonClick" styleClass="menu-button, small-button" text="Settings"/>
-        <Button onAction="#onAboutButtonClick" styleClass="menu-button, small-button" text="About"/>
-        <Button onAction="#onExitButtonClick" styleClass="menu-button, small-button" text="Exit"/>
+        <Button onAction="#onStartSimulationButtonClick" styleClass="menu-button, small-button" text="Start Simulation" />
+        <Button onAction="#onSettingsButtonClick" styleClass="menu-button, small-button" text="Settings" />
+        <Button onAction="#onAboutButtonClick" styleClass="menu-button, small-button" text="About" />
+        <Button onAction="#onExitButtonClick" styleClass="menu-button, small-button" text="Exit" />
 
     </children>
 </VBox>

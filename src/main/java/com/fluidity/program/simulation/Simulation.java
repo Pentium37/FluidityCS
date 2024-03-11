@@ -124,7 +124,7 @@ public class Simulation implements Runnable {
 				int color = (int) (num > 255 ? 255 : num);
 				int rgb = (255 << 24) | (color << 16) | (color << 8) | color;// Set alpha channel to fully opaque
 
-				if (fluid.barrierPresent[x/CELL_LENGTH][y/CELL_LENGTH]) {
+				if (fluid.barrierPresent[x / CELL_LENGTH][y / CELL_LENGTH]) {
 					rgb = 0xFF99DDFF;
 				}
 
@@ -177,7 +177,7 @@ public class Simulation implements Runnable {
 
 	public void setTunnelBoundaries() {
 		this.fluid =
-				new TunnelFluid(IMAGE_WIDTH / CELL_LENGTH, IMAGE_HEIGHT / CELL_LENGTH, CELL_LENGTH, 0, 0, 4, 0.1, 1);
+				new TunnelFluid(IMAGE_WIDTH / CELL_LENGTH, IMAGE_HEIGHT / CELL_LENGTH, CELL_LENGTH, 0, 0, 4, 3);
 	}
 
 	public void setBoxBoundaries() {
@@ -241,7 +241,14 @@ public class Simulation implements Runnable {
 	}
 
 	public void stepForward() {
-		if (!rollbackMemory.isFull()) {
+		if (dequeueCounter == 0) {
+			for (int i = 0; i < TPS / 5; i++) {
+				fluid.step(1.0 / TPS);
+			}
+			if (savingEnabled) {
+				saveFluidIntoRollback();
+			}
+		} else if (!rollbackMemory.isFull()) {
 			rollbackMemory.retrievePush();
 
 			FluidState state = rollbackMemory.peekStack();
@@ -250,14 +257,6 @@ public class Simulation implements Runnable {
 			fluid.verticalVelocity = state.verticalVeloctiy;
 
 			dequeueCounter--;
-		}
-		if (dequeueCounter == 0) {
-			for (int i = 0; i < TPS / 5; i++) {
-				fluid.step(1.0 / TPS);
-			}
-			if (savingEnabled) {
-				saveFluidIntoRollback();
-			}
 		}
 		render();
 		if (sensorOn) {
@@ -297,8 +296,8 @@ public class Simulation implements Runnable {
 	}
 
 	public void addBarrier(int x, int y) {
-		int baseX = (x/2) * 2;
-		int baseY = (y/2) * 2;
+		int baseX = (x / 2) * 2;
+		int baseY = (y / 2) * 2;
 		fluid.barrierPresent[baseX][baseY] = true;
 		fluid.barrierPresent[baseX + 1][baseY] = true;
 		fluid.barrierPresent[baseX][baseY + 1] = true;
@@ -307,15 +306,18 @@ public class Simulation implements Runnable {
 		render();
 	}
 
-	//doesn't remove anything?
 	public void removeBarrier(int x, int y) {
-		int baseX = (x/2) * 2;
-		int baseY = (y/2) * 2;
+		int baseX = (x / 2) * 2;
+		int baseY = (y / 2) * 2;
 		fluid.barrierPresent[baseX][baseY] = false;
 		fluid.barrierPresent[baseX + 1][baseY] = false;
 		fluid.barrierPresent[baseX][baseY + 1] = false;
 		fluid.barrierPresent[baseX + 1][baseY + 1] = false;
 		System.out.println(baseX + " " + baseY);
 		render();
+	}
+
+	public void clearBarriers() {
+		fluid.barrierPresent = new boolean[FLUID_WIDTH][FLUID_HEIGHT];
 	}
 }

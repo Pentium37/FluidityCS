@@ -1,12 +1,10 @@
 package com.fluidity.program.simulation.fluid;
 
 public class TunnelFluid extends Fluid {
-	private double inflowDensity;
 	private double inflowVelocity;
-	public TunnelFluid(int WIDTH, int HEIGHT, int CELL_LENGTH, double viscosity, double diffusionRate, int ITERATIONS, double inflowDensity, double inflowVelocity) {
+	public TunnelFluid(int WIDTH, int HEIGHT, int CELL_LENGTH, double viscosity, double diffusionRate, int ITERATIONS, double inflowVelocity) {
 		// Set the fluid's properties
 		super(WIDTH, HEIGHT, CELL_LENGTH, viscosity, diffusionRate, ITERATIONS);
-		this.inflowDensity = inflowDensity;
 		this.inflowVelocity = inflowVelocity;
 	}
 

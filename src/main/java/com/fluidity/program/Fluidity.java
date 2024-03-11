@@ -1,5 +1,6 @@
 package com.fluidity.program;
 
+import com.fluidity.program.test.Prototype3;
 import com.fluidity.program.ui.Manager;
 import com.fluidity.program.ui.ProgramState;
 import com.fluidity.program.utilities.Deque;
@@ -15,6 +16,9 @@ public class Fluidity extends Application {
 		FileHandler.createFile("configurations.txt");
 		Manager sceneManager = new Manager(stage);
 		sceneManager.loadScene(ProgramState.MAIN_MENU);
+
+//		Prototype3 prototype3 = new Prototype3();
+//		prototype3.test1();
 		//		sceneManager.loadScene(ProgramState.TEST_SIMULATION);
 	}
 
